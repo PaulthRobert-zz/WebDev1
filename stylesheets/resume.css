@@ -1,0 +1,65 @@
+body{
+    width: 75%;
+    margin-left: 12.5%;
+    margin-right: 12.5%;
+    margin-top: 5%;
+    text-align: justify
+}
+
+#heading{
+    text-align: center;
+    line-height: 5pt;
+}
+
+h1{
+    font-size: 25pt;
+}
+
+h2{
+    font-size: 16pt;
+}
+
+h3{
+    font-size: 12pt;
+}
+
+h4, .left{
+    font-size: 12pt;
+ }
+
+
+
+.left{
+    float: left;
+    
+
+}
+
+.right{
+    float: right;
+    clear: right;
+}
+
+.company {
+    padding-left: 10pt;
+}
+
+.subTitle{
+    font-size: 16pt;
+}
+
+.Institute{
+    font-size: 14pt;
+}
+
+#WorkHistory .left {
+    font-weight: bold;
+} 
+
+.cert>.left, .skill{
+    padding-left: 15pt;
+}
+
+nav > ul {
+    list-style: none;
+}

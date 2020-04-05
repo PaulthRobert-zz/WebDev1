@@ -1,8 +1,12 @@
 body{
     background-color: lightgoldenrodyellow;
+    font-family: 'Courier New', Courier, monospace;
+    color: brown;
+     
 
 }
 
 h1{
     font-size: 150%;
+    
 }
