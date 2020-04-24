@@ -19,12 +19,12 @@
         <!-- my js file-->
 
 
-        <form>            
+        <form class="bg-dark">            
             <div class="form-row">  
                 <div class="col">
                     <div class="form-group">
                         <label for="Year">Roster Year</label>
-                        <input type="year" class="form-control" id="RosterYear" aria-describedby="yearHelp" placeholder="Enter a Year">
+                        <input type="year" class="form-control" id="RosterYear" aria-describedby="yearHelp" placeholder="Enter a Year" value="2020">
                     </div>
                 </div>
                 <div class="col">
@@ -33,11 +33,10 @@
                     </div>
                     
                 </div>                
-            </div>    
-            <div class="form-row">
-                <div class="col" id="data"></div>
-            </div>        
-        </form>
+            </div>
+        </form>    
+        <div id="data"></div>        
+
         <!-- Leave this script at the bottom please-->
         <script src="../js/script.js"></script>
     </body>
