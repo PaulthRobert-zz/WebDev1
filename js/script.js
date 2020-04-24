@@ -21,7 +21,7 @@ function getTeams (){
     //clear div
     data.innerHTML="";
 
-    return fetch('http://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27'+RosterYear+'%27')
+    return fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27'+RosterYear+'%27')
         .then(function(response){            
             return response.json();
         })
