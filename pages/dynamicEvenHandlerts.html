@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+    <script src="../js/jquery.js"></script>
+
+
+
+    <body>
+        <div>
+            <ul id-"links">
+                <li class="dynamic-link">List item 1</li>
+                <li class="dynamic-link">List item 2</li>   
+                <li class="dynamic-link">List item 3</li>
+                <li class="dynamic-link">List item 4</li>   
+            </ul>
+        </div>
+
+        <script>
+                var element = document.getElementById("dynamic-link");
+        
+                 function clickMe(){
+                    alert("Click");
+                }
+        
+                element.onclick=clickMe;
+        
+                var $ = function(selctor) {
+                    return document.querySelector(selctor);
+                }
+        
+                var links = $('#links').getElementByTagName('li');
+        
+                for (var i=0; i<links.length; i++){
+                    var link = links[i];
+                    link.onclick = clickMe;
+                }
+                
+                clickMe();
+            </script>
+    </body>
+</html>

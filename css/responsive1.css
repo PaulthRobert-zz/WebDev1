@@ -8,3 +8,7 @@
 .cust-card-text-right{
     text-align: right;
 }
+
+.team-card:hover{
+    background-color: gray;
+}

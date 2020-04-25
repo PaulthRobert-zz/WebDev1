@@ -3,6 +3,7 @@
 //when you click the button the text in div 1 changes
 var btn1 = document.getElementById("btn").addEventListener("click",getTeams);
 
+
 function getTeams (){
 //set the html contents of index.html dynamically
     
@@ -20,56 +21,61 @@ function getTeams (){
 
     //clear div
     data.innerHTML="";
-
+    //get mlb team data api
     return fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27'+RosterYear+'%27')
         .then(function(response){            
             return response.json();
         })
-        .then(function(resp){
-            console.log(resp.team_all_season.queryResults.row[0].name_display_full);
+        .then(function(resp){          
 
             //get total array size
             let totalSize = resp.team_all_season.queryResults.totalSize;
 
             //loop through the array to populate your html
             for(let i=0; i < totalSize; i++){
-                
+                //mlb_org_brief
+                let Name=resp.team_all_season.queryResults.row[i].mlb_org_brief;                
                 //assign team name to var
                 let teamName = resp.team_all_season.queryResults.row[i].name_display_full;
-                //league_full
-                let league = resp.team_all_season.queryResults.row[i].league;
                 //venue_name:
-                let venueName=resp.team_all_season.queryResults.row[i].venue_name;
-                //mlb_org_brief
-                let Name=resp.team_all_season.queryResults.row[i].mlb_org_brief;
-                //generate the innerHTML
-                data.innerHTML += `
-                    <div class="card bg-dark">    
-                        <div class="card-body bg-light">    
-                            <div class="row">
-                                <div class="col-4">
-                                    <p class="card-text text-body">`+Name+`</p>
-                                </div>
-                                <div class="col-8">
-                                    <p class="text-body cust-card-text-right">`+teamName+`</p>
-                                </div>
-                            </div>
-                            <div class="row">                                
-                                <div class = "col-10">
-                                    <p class="card-text text-body">`+venueName+`</p>
-                                </div>
-                                <div class = "col-2">
-                                    <p class="card-text text-body cust-card-text-right">`+league+`</p>
-                                </div>
-                            </div>
-        
-                        </div>
-                    </div>
-                </div>`
-
+                let venueName=resp.team_all_season.queryResults.row[i].venue_name;                
+                //league
+                let league = resp.team_all_season.queryResults.row[i].league;
+                //generate the innerHTML 
+                teamCard(Name, teamName, venueName, league, i);
+                //add click event handler to team card
+                clickTeam(i);                             
             }
-            
-            //return response.data
-
         })
     }
+
+function teamCard(Name, teamName, venueName, league, i){
+    $("#data").append(`<div class="card bg-dark">    
+    <div class="card-body bg-light team-card`+i+`">    
+        <div class="row">
+            <div class="col-4">
+                <p class="card-text text-body name">`+Name+`</p>
+            </div>
+            <div class="col-8">
+                <p class="text-body cust-card-text-right">`+teamName+`</p>
+            </div>
+        </div>
+        <div class="row">                                
+            <div class = "col-10">
+                <p class="card-text text-body">`+venueName+`</p>
+            </div>
+            <div class = "col-2">
+                <p class="card-text text-body cust-card-text-right">`+league+`</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>`)
+};
+
+function clickTeam(i){
+    $(".team-card"+i).on("click",function(){
+        alert($(this).find(".name").text());
+    });
+}
