@@ -10,84 +10,260 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 // js.react
 // babel > jsx
 
-//const root = document.getElementById('root');
+//typically new react apps have a single app component at the very top
+/*
+class App extends React.Component{
+    constructor(props){
+        super(props);
+    }
+    render(){
+        return(
+            <Ribbon />
+        )
 
-var Clock = function (_React$Component) {
-    _inherits(Clock, _React$Component);
+    }
+}
+*/
 
-    function Clock(props) {
-        _classCallCheck(this, Clock);
+var DrillDownControl = function (_React$Component) {
+    _inherits(DrillDownControl, _React$Component);
 
-        var _this = _possibleConstructorReturn(this, (Clock.__proto__ || Object.getPrototypeOf(Clock)).call(this, props));
+    function DrillDownControl(props) {
+        _classCallCheck(this, DrillDownControl);
 
-        _this.state = {
-            date: new Date(),
-            cats: 'George',
-            count: 0
-        };
+        var _this = _possibleConstructorReturn(this, (DrillDownControl.__proto__ || Object.getPrototypeOf(DrillDownControl)).call(this, props));
 
+        _this.state = { drillDown: 'searchYear' };
+        _this.handleSubmitButtonClick = _this.handleSubmitButtonClick.bind(_this);
+
+        //states to move through the levels of drill down
+        //searchYear
+        //selectTeam
+        //selectPlayer
+        //viewPlayerStats
         return _this;
     }
 
-    _createClass(Clock, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {
-            var _this2 = this;
-
-            this.timerID = setInterval(function () {
-                return _this2.tick();
-            }, 1000);
-        }
-    }, {
-        key: 'componentWillUnmount',
-        value: function componentWillUnmount() {
-            clearInterval(this.timerID);
-        }
-    }, {
-        key: 'tick',
-        value: function tick() {
-            this.setState({
-                date: new Date(),
-                cats: 'Orange',
-                count: this.state.count + 1
-            });
+    _createClass(DrillDownControl, [{
+        key: 'handleSubmitButtonClick',
+        value: function handleSubmitButtonClick() {
+            this.setState({ drillDown: 'selectTeam' });
         }
     }, {
         key: 'render',
         value: function render() {
+            var drillDown = this.state.drillDown;
+            var page = void 0;
+            switch (drillDown) {
+                case 'searchYear':
+                    page = React.createElement(
+                        'div',
+                        null,
+                        React.createElement(Ribbon, {
+                            id: 'btn',
+                            type: 'button',
+                            className: 'btn btn-primary',
+                            caption: 'Go',
+                            onClick: this.handleSubmitButtonClick
+                        })
+                    );
+                    break;
+                case 'selectTeam':
+                    page = React.createElement(
+                        'div',
+                        null,
+                        React.createElement(Ribbon, {
+                            id: 'btn',
+                            type: 'button',
+                            className: 'btn btn-primary',
+                            caption: 'Go',
+                            onClick: this.handleSubmitButtonClick
+                        }),
+                        React.createElement(TeamTile, {
+                            name: 'Fuz Cats',
+                            teamName: 'The Fuzzy Caterpillars',
+                            venueName: 'Davis Dirt Ranch',
+                            league: 'CF'
+                        })
+                    );
+                    break;
+            }
+
             return React.createElement(
                 'div',
                 null,
+                page
+            );
+        }
+    }]);
+
+    return DrillDownControl;
+}(React.Component);
+
+var Ribbon = function (_React$Component2) {
+    _inherits(Ribbon, _React$Component2);
+
+    function Ribbon(props) {
+        _classCallCheck(this, Ribbon);
+
+        return _possibleConstructorReturn(this, (Ribbon.__proto__ || Object.getPrototypeOf(Ribbon)).call(this, props));
+    }
+
+    _createClass(Ribbon, [{
+        key: 'render',
+        value: function render() {
+            return React.createElement(
+                'form',
+                { className: 'bg-dark' },
                 React.createElement(
-                    'h1',
-                    null,
-                    'Hello, Paul'
-                ),
-                React.createElement(
-                    'h2',
-                    null,
-                    'It is ',
-                    this.state.date.toLocaleTimeString(),
-                    '.'
-                ),
-                React.createElement(
-                    'p',
-                    null,
-                    'Your cat\'s name is ',
-                    this.state.cats,
-                    '!'
-                ),
-                React.createElement(
-                    'p',
-                    null,
-                    'The count = ',
-                    this.state.count
+                    'div',
+                    { className: 'form-row' },
+                    React.createElement(
+                        'div',
+                        { className: 'col' },
+                        React.createElement(SearchBar, {
+                            type: 'year',
+                            className: 'form-control',
+                            id: 'RosterYear',
+                            placeholder: 'Enter a Year'
+                            //defaultValue= "2020" 
+                        })
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'col' },
+                        React.createElement(
+                            'div',
+                            { className: 'position-absolute mid-center' },
+                            React.createElement(SubmitButton, {
+                                id: this.props.id //"btn" 
+                                , type: this.props.type //"button"
+                                , className: this.props.className //"btn btn-primary"
+                                , caption: this.props.caption //"Go"
+                                , onClick: this.props.onClick //DrillDownControl.handleSubmitButtonClick}    
+                            })
+                        )
+                    )
                 )
             );
         }
     }]);
 
-    return Clock;
+    return Ribbon;
 }(React.Component);
 
-ReactDOM.render(React.createElement(Clock, null), document.getElementById('root'));
+var TeamTile = function (_React$Component3) {
+    _inherits(TeamTile, _React$Component3);
+
+    function TeamTile(props) {
+        _classCallCheck(this, TeamTile);
+
+        return _possibleConstructorReturn(this, (TeamTile.__proto__ || Object.getPrototypeOf(TeamTile)).call(this, props));
+    }
+
+    _createClass(TeamTile, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {}
+    }, {
+        key: 'componentWillUnmount',
+        value: function componentWillUnmount() {}
+    }, {
+        key: 'render',
+        value: function render() {
+            return React.createElement(
+                'div',
+                { className: 'card bg-dark' },
+                React.createElement(
+                    'div',
+                    { className: 'card-body bg-light team-card`+i+`' },
+                    React.createElement(
+                        'div',
+                        { className: 'row' },
+                        React.createElement(
+                            'div',
+                            { className: 'col-4' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body name' },
+                                this.props.name
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-8' },
+                            React.createElement(
+                                'p',
+                                { className: 'text-body cust-card-text-right' },
+                                this.props.teamName
+                            )
+                        )
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'row' },
+                        React.createElement(
+                            'div',
+                            { className: 'col-10' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body' },
+                                this.props.venueName
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body cust-card-text-right' },
+                                this.props.league
+                            )
+                        )
+                    )
+                )
+            );
+        }
+    }]);
+
+    return TeamTile;
+}(React.Component);
+
+function SearchBar(props) {
+    return React.createElement(
+        'div',
+        { className: 'form-group' },
+        React.createElement(
+            'label',
+            null,
+            'Roster Year'
+        ),
+        React.createElement('input', {
+            type: props.type //"year" 
+            , className: props.className //"form-control" 
+            , id: props.id //"RosterYear" 
+            , placeholder: props.placeholder //"Enter a Year" 
+            , defaultValue: props.defaultValue //"2020" 
+        })
+    );
+}
+
+function SubmitButton(props) {
+    return React.createElement(
+        'button',
+        {
+            id: props.id //"btn" 
+            , type: props.type //"button"
+            , className: props.className //"btn btn-primary"
+            , onClick: props.onClick
+        },
+        props.caption
+    );
+}
+
+function teamGo() {
+    alert("Go!");
+}
+
+ReactDOM.render(
+//<App />,
+React.createElement(DrillDownControl, null), document.getElementById('root'));

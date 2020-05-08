@@ -12,3 +12,7 @@
 .team-card:hover{
     background-color: gray;
 }
+
+.bg-dark{
+    color: white;
+}
