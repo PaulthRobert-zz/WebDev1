@@ -11,30 +11,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 // babel > jsx
 
 //typically new react apps have a single app component at the very top
-/*
-class App extends React.Component{
-    constructor(props){
-        super(props);
-    }
-    render(){
-        return(
-            <Ribbon />
-        )
 
-    }
-}
-*/
+var App = function (_React$Component) {
+    _inherits(App, _React$Component);
 
-var DrillDownControl = function (_React$Component) {
-    _inherits(DrillDownControl, _React$Component);
+    function App(props) {
+        _classCallCheck(this, App);
 
-    function DrillDownControl(props) {
-        _classCallCheck(this, DrillDownControl);
-
-        var _this = _possibleConstructorReturn(this, (DrillDownControl.__proto__ || Object.getPrototypeOf(DrillDownControl)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
         _this.state = { drillDown: 'searchYear' };
         _this.handleSubmitButtonClick = _this.handleSubmitButtonClick.bind(_this);
+        _this.handleTeamClick = _this.handleTeamClick.bind(_this);
 
         //states to move through the levels of drill down
         //searchYear
@@ -44,60 +32,85 @@ var DrillDownControl = function (_React$Component) {
         return _this;
     }
 
-    _createClass(DrillDownControl, [{
+    _createClass(App, [{
         key: 'handleSubmitButtonClick',
         value: function handleSubmitButtonClick() {
             this.setState({ drillDown: 'selectTeam' });
         }
     }, {
+        key: 'handleTeamClick',
+        value: function handleTeamClick() {
+            alert('You clicked a team');
+        }
+    }, {
         key: 'render',
         value: function render() {
             var drillDown = this.state.drillDown;
+            var ribbon = void 0;
             var page = void 0;
+
+            ribbon = React.createElement(
+                'div',
+                null,
+                React.createElement(Ribbon, {
+                    id: 'btn',
+                    type: 'button',
+                    className: 'btn btn-primary',
+                    caption: 'Go',
+                    onClick: this.handleSubmitButtonClick
+                })
+            );
+
             switch (drillDown) {
                 case 'searchYear':
-                    page = React.createElement(
-                        'div',
-                        null,
-                        React.createElement(Ribbon, {
-                            id: 'btn',
-                            type: 'button',
-                            className: 'btn btn-primary',
-                            caption: 'Go',
-                            onClick: this.handleSubmitButtonClick
-                        })
-                    );
+                    page = React.createElement('div', null);
+
                     break;
                 case 'selectTeam':
+
+                    var rawData = getTeams(document.getElementById('RosterYear').value); //send the input year to the getTeams function
+                    // console.log(rawData);
+                    console.log(Promise.resolve(rawData));
+
+                    //let numbers = [1,2,3,4,5];
+                    /*const listItems = datas.map((data)=>
+                        <li>{data.mlb_org_brief}</li>
+                    */
+
                     page = React.createElement(
                         'div',
                         null,
-                        React.createElement(Ribbon, {
-                            id: 'btn',
-                            type: 'button',
-                            className: 'btn btn-primary',
-                            caption: 'Go',
-                            onClick: this.handleSubmitButtonClick
-                        }),
-                        React.createElement(TeamTile, {
-                            name: 'Fuz Cats',
-                            teamName: 'The Fuzzy Caterpillars',
-                            venueName: 'Davis Dirt Ranch',
-                            league: 'CF'
-                        })
+                        React.createElement(
+                            'ul',
+                            null,
+                            'Please Hold'
+                        )
                     );
+
+                    /*    <div> 
+                            <TeamTile
+                                onClick={this.handleTeamClick} 
+                                name = "Fuz Cats"
+                                teamName = 'The Fuzzy Caterpillars'
+                                venueName = 'Davis Dirt Ranch'
+                                league = 'CF'
+                            />
+                        </div>
+                    */
+
                     break;
             }
 
             return React.createElement(
                 'div',
                 null,
+                ribbon,
                 page
             );
         }
     }]);
 
-    return DrillDownControl;
+    return App;
 }(React.Component);
 
 var Ribbon = function (_React$Component2) {
@@ -122,6 +135,7 @@ var Ribbon = function (_React$Component2) {
                         'div',
                         { className: 'col' },
                         React.createElement(SearchBar, {
+                            label: 'MLB Season',
                             type: 'year',
                             className: 'form-control',
                             id: 'RosterYear',
@@ -162,17 +176,11 @@ var TeamTile = function (_React$Component3) {
     }
 
     _createClass(TeamTile, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {}
-    }, {
-        key: 'componentWillUnmount',
-        value: function componentWillUnmount() {}
-    }, {
         key: 'render',
         value: function render() {
             return React.createElement(
                 'div',
-                { className: 'card bg-dark' },
+                { className: 'card bg-dark', onClick: this.props.onClick },
                 React.createElement(
                     'div',
                     { className: 'card-body bg-light team-card`+i+`' },
@@ -235,7 +243,7 @@ function SearchBar(props) {
         React.createElement(
             'label',
             null,
-            'Roster Year'
+            props.label
         ),
         React.createElement('input', {
             type: props.type //"year" 
@@ -264,6 +272,37 @@ function teamGo() {
     alert("Go!");
 }
 
-ReactDOM.render(
-//<App />,
-React.createElement(DrillDownControl, null), document.getElementById('root'));
+function getTeams(rosterYear) {
+    //get mlb team data api
+    return fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27' + rosterYear + '%27').then(function (response) {
+        return response.json();
+    }).then(function (resp) {
+        return resp.team_all_season.queryResults.row;
+    });
+}
+/*
+.then(function(resp){          
+      //get total array size
+    let totalSize = resp.team_all_season.queryResults.totalSize;
+      //loop through the array to populate your html
+    for(let i=0; i < totalSize; i++){
+        //mlb_org_brief
+        let Name=resp.team_all_season.queryResults.row[i].mlb_org_brief;                
+        //assign team name to var
+        let teamName = resp.team_all_season.queryResults.row[i].name_display_full;
+        //venue_name:
+        let venueName=resp.team_all_season.queryResults.row[i].venue_name;                
+        //league
+        let league = resp.team_all_season.queryResults.row[i].league;
+        //team_id
+        let teamId = resp.team_all_season.queryResults.row[i].team_id;
+        //generate the innerHTML 
+        teamCard(Name, teamName, venueName, league, i);
+        //add click event handler to team card
+        clickTeam(i, teamId, rosterYear);                             
+    }
+})
+}
+*/
+
+ReactDOM.render(React.createElement(App, null), document.getElementById('root'));

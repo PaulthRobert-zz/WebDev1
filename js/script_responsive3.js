@@ -3,25 +3,13 @@
 // babel > jsx
 
 //typically new react apps have a single app component at the very top
-/*
+
 class App extends React.Component{
-    constructor(props){
-        super(props);
-    }
-    render(){
-        return(
-            <Ribbon />
-        )
-
-    }
-}
-*/
-
-class DrillDownControl extends React.Component{
     constructor(props){
         super(props);
         this.state ={drillDown: 'searchYear'}
         this.handleSubmitButtonClick = this.handleSubmitButtonClick.bind(this);
+        this.handleTeamClick = this.handleTeamClick.bind(this);
         
         //states to move through the levels of drill down
             //searchYear
@@ -33,51 +21,71 @@ class DrillDownControl extends React.Component{
         this.setState({drillDown: 'selectTeam'})
     }
 
+    handleTeamClick(){
+        alert('You clicked a team');
+    }
+
     render(){
         const drillDown = this.state.drillDown;
+        let ribbon;
         let page;
+
+        ribbon=
+            <div>
+                <Ribbon 
+                    id ="btn" 
+                    type="button"
+                    className="btn btn-primary"
+                    caption="Go"
+                    onClick={this.handleSubmitButtonClick} 
+                />
+            </div>
+
         switch(drillDown){
             case 'searchYear':
                 page = 
-                    <div>
-                        <Ribbon 
-                            id ="btn" 
-                            type="button"
-                            className="btn btn-primary"
-                            caption="Go"
-                            onClick={this.handleSubmitButtonClick} 
-                        />
-                    </div>
+                <div></div> 
+
             break;
             case 'selectTeam':
-                page =
-                    <div> 
-                        <Ribbon 
-                            id ="btn" 
-                            type="button"
-                            className="btn btn-primary"
-                            caption="Go"
-                            onClick={this.handleSubmitButtonClick} 
-                        />
-                        <TeamTile 
-                            name = 'Fuz Cats'
-                            teamName = 'The Fuzzy Caterpillars'
-                            venueName = 'Davis Dirt Ranch'
-                            league = 'CF'
-                        />
-                    </div>
+                
+                let rawData = getTeams(document.getElementById('RosterYear').value); //send the input year to the getTeams function
+               // console.log(rawData);
+                console.log(Promise.resolve(rawData));
+
+                //let numbers = [1,2,3,4,5];
+                /*const listItems = datas.map((data)=>
+                    <li>{data.mlb_org_brief}</li>
+                */
+                
+                    page =
+                        <div>
+                            <ul>Please Hold</ul>
+                        </div>
+                    
+                    /*    <div> 
+                            <TeamTile
+                                onClick={this.handleTeamClick} 
+                                name = "Fuz Cats"
+                                teamName = 'The Fuzzy Caterpillars'
+                                venueName = 'Davis Dirt Ranch'
+                                league = 'CF'
+                            />
+                        </div>
+                    */
+                
             break;
         }
 
         return(
             <div>
+                {ribbon}
                 {page}
             </div>
            )
     }
 
 }
-
 
 class Ribbon extends React.Component{
     constructor(props){
@@ -90,6 +98,7 @@ class Ribbon extends React.Component{
                     <div className="form-row">  
                         <div className="col">
                             <SearchBar
+                                label= 'MLB Season'
                                 type="year" 
                                 className= "form-control"
                                 id="RosterYear"
@@ -119,13 +128,9 @@ class TeamTile extends React.Component{
     constructor(props){
         super(props);     
     }
-    componentDidMount(){       
-    }
-    componentWillUnmount(){      
-    }
     render() {
         return(
-            <div className="card bg-dark">    
+            <div className="card bg-dark" onClick={this.props.onClick}>    
                 <div className="card-body bg-light team-card`+i+`">    
                     <div className="row">
                         <div className="col-4">
@@ -154,7 +159,7 @@ class TeamTile extends React.Component{
 function SearchBar(props){
     return(
         <div className="form-group">
-            <label>Roster Year</label>
+            <label>{props.label}</label>
             <input 
                 type={props.type} //"year" 
                 className= {props.className} //"form-control" 
@@ -184,13 +189,44 @@ function teamGo(){
     alert("Go!");
 }
 
+function getTeams (rosterYear){
+//get mlb team data api
+    return fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27'+rosterYear+'%27')
+    .then(function(response){            
+        return response.json();
+    })
+    .then(function(resp){
+        return resp.team_all_season.queryResults.row
+    })
+}
+    /*
+    .then(function(resp){          
+
+        //get total array size
+        let totalSize = resp.team_all_season.queryResults.totalSize;
+
+        //loop through the array to populate your html
+        for(let i=0; i < totalSize; i++){
+            //mlb_org_brief
+            let Name=resp.team_all_season.queryResults.row[i].mlb_org_brief;                
+            //assign team name to var
+            let teamName = resp.team_all_season.queryResults.row[i].name_display_full;
+            //venue_name:
+            let venueName=resp.team_all_season.queryResults.row[i].venue_name;                
+            //league
+            let league = resp.team_all_season.queryResults.row[i].league;
+            //team_id
+            let teamId = resp.team_all_season.queryResults.row[i].team_id;
+            //generate the innerHTML 
+            teamCard(Name, teamName, venueName, league, i);
+            //add click event handler to team card
+            clickTeam(i, teamId, rosterYear);                             
+        }
+    })
+}
+*/
 
 ReactDOM.render(
-   //<App />,
-   <DrillDownControl />,
+   <App />,
     document.getElementById('root')
 )
-
-
-
-
