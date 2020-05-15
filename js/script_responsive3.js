@@ -48,10 +48,13 @@ class App extends React.Component{
 
             break;
             case 'selectTeam':
-                
-                let rawData = getTeams(document.getElementById('RosterYear').value); //send the input year to the getTeams function
-               // console.log(rawData);
-                console.log(Promise.resolve(rawData));
+                let rosterYear = document.getElementById('RosterYear').value    
+
+                let rawData = getTeams(rosterYear); //send the input year to the getTeams function
+                console.log('line 53 - log raw data response from getTeams()')
+                console.log('Roster Year:'+rosterYear)
+                console.log('App.selectTeam.rawData: '+rawData.then((value)=>{
+                    console.log(value)}))
 
                 //let numbers = [1,2,3,4,5];
                 /*const listItems = datas.map((data)=>
@@ -190,15 +193,31 @@ function teamGo(){
 }
 
 function getTeams (rosterYear){
+ 
 //get mlb team data api
-    return fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27'+rosterYear+'%27')
-    .then(function(response){            
-        return response.json();
-    })
-    .then(function(resp){
+let teamData = fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27'+rosterYear+'%27')
+        //.then(response => response.json())
+        .then(res =>res.json())
+        .then(data => data.team_all_season.queryResults)
+
+    return teamData
+        //.then(teams => console.log(data.team_all_season)))
+    //.then(data => console.log(data.team_all_season.queryResults.row))
+    
+    
+    
+}   
+
+    
+    // .then(function(teamData){
+    //     return teamData.value;
+
+    // })
+    /*.then(function(resp){
         return resp.team_all_season.queryResults.row
     })
-}
+    */
+
     /*
     .then(function(resp){          
 
