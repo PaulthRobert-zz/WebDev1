@@ -241,7 +241,7 @@ var TeamCards = function (_React$Component3) {
                 { className: 'card bg-dark', onClick: this.props.onClick },
                 React.createElement(
                     'div',
-                    { className: 'card-body bg-light team-card`+i+`' },
+                    { className: 'card-body bg-light team-card' },
                     React.createElement(
                         'div',
                         { className: 'row' },
@@ -311,17 +311,27 @@ var PlayerCards = function (_React$Component4) {
                 { className: 'card bg-dark', onClick: this.props.onClick },
                 React.createElement(
                     'div',
-                    { className: 'card-body bg-light team-card`+i+`' },
+                    { className: 'card-body bg-light team-card' },
                     React.createElement(
                         'div',
                         { className: 'row' },
                         React.createElement(
                             'div',
-                            { className: 'col-10' },
+                            { className: 'col-5' },
                             React.createElement(
                                 'p',
-                                { className: 'card-text text-body name' },
+                                { className: 'card-text text-body' },
                                 this.props.playerName
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-3' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body cust-card-text-right' },
+                                this.props.posDes.toLowerCase(),
+                                ' '
                             )
                         ),
                         React.createElement(
@@ -329,7 +339,16 @@ var PlayerCards = function (_React$Component4) {
                             { className: 'col-2' },
                             React.createElement(
                                 'p',
-                                { className: 'text-body' },
+                                { className: 'card-text text-body cust-card-text-right' },
+                                this.props.primPos
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body cust-card-text-right' },
                                 '#',
                                 this.props.jerseyNumber
                             )
@@ -341,20 +360,12 @@ var PlayerCards = function (_React$Component4) {
                         React.createElement(
                             'div',
                             { className: 'col-10' },
-                            React.createElement(
-                                'p',
-                                { className: 'card-text text-body name' },
-                                this.props.posDes.toLowerCase()
-                            )
+                            React.createElement('p', { className: 'card-text text-body' })
                         ),
                         React.createElement(
                             'div',
                             { className: 'col-2' },
-                            React.createElement(
-                                'p',
-                                { className: 'text-body' },
-                                this.props.primPos
-                            )
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-right' })
                         )
                     )
                 )

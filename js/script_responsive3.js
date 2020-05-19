@@ -186,7 +186,7 @@ class TeamCards extends React.Component{
     render() {
         return(
             <div className="card bg-dark" onClick={this.props.onClick}>    
-                <div className="card-body bg-light team-card`+i+`">    
+                <div className="card-body bg-light team-card">    
                     <div className="row">
                         <div className="col-4">
                             <p className="card-text text-body name">{this.props.name}</p>
@@ -217,21 +217,27 @@ class PlayerCards extends React.Component{
     render() {
         return(
             <div className="card bg-dark" onClick={this.props.onClick}>    
-                <div className="card-body bg-light team-card`+i+`">    
+                <div className="card-body bg-light team-card">    
                     <div className="row">
-                        <div className="col-10">
-                            <p className="card-text text-body name">{this.props.playerName}</p>
+                        <div className="col-5">
+                            <p className="card-text text-body">{this.props.playerName}</p>
+                        </div>
+                        <div className="col-3">
+                            <p className="card-text text-body cust-card-text-right">{this.props.posDes.toLowerCase()} </p>
                         </div>
                         <div className="col-2">
-                            <p className="text-body">#{this.props.jerseyNumber}</p>
+                            <p className="card-text text-body cust-card-text-right">{this.props.primPos}</p>
+                        </div>
+                        <div className="col-2">
+                            <p className="card-text text-body cust-card-text-right">#{this.props.jerseyNumber}</p>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col-10">
-                            <p className="card-text text-body name">{this.props.posDes.toLowerCase()}</p>
+                            <p className="card-text text-body">{}</p>
                         </div>
                         <div className="col-2">
-                            <p className="text-body">{this.props.primPos}</p>
+                            <p className="card-text text-body cust-card-text-right">{}</p>
                         </div>
                     </div>
                 </div>
