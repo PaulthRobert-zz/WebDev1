@@ -7,7 +7,9 @@
 class App extends React.Component{
     constructor(props){
         super(props);
-        this.state ={drillDown: 'searchYear'}
+        this.state ={
+            drillDown: 'searchYear',
+            data: []}
         this.handleSubmitButtonClick = this.handleSubmitButtonClick.bind(this);
         this.handleTeamClick = this.handleTeamClick.bind(this);
         
@@ -18,18 +20,50 @@ class App extends React.Component{
             //viewPlayerStats
     }
     handleSubmitButtonClick(){
-        this.setState({drillDown: 'selectTeam'})
+        this.getTeams();
     }
 
     handleTeamClick(){
         alert('You clicked a team');
     }
 
-    render(){
-        const drillDown = this.state.drillDown;
-        let ribbon;
-        let page;
+    componentDidMount(){
+       
+    }
 
+    getTeams(){
+        console.log ('you got the teams')
+        let rosterYear = document.getElementById('RosterYear').value
+                
+        fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27'+rosterYear+'%27')
+            .then(prom =>prom.json())
+            .then(data => {  
+               let teamData=data.team_all_season.queryResults.row;
+                //console.log(teamData);
+                //console.log(teamData.length);       
+                //teamCards.push(<TeamCards name='Paul'/>); 
+
+                //data is the array response from MLB
+                //loop through data with a map function and built the team cards
+                /*teamCards = teamData.map((data)=>{                                                        
+                    console.log(data.name_display_full);
+                    return <TeamCards name='paul' />;
+                 */                               
+                this.setState({
+                    drillDown: 'selectTeam',
+                    data: data.team_all_season.queryResults.row
+                });
+            })
+            .catch(err => console.log('Error: '+err));
+    }
+
+    render(){
+        const drillDown= this.state.drillDown;
+        const data = this.state.data;
+        let ribbon;
+        let teamCards = [];
+
+        //ribbon here is a React Component
         ribbon=
             <div>
                 <Ribbon 
@@ -42,48 +76,66 @@ class App extends React.Component{
             </div>
 
         switch(drillDown){
+            //TODO here you need to reference teamCard as a component
             case 'searchYear':
-                page = 
-                <div></div> 
+                //TODO depricate this later
+                teamCards.push(<TeamCards name='Please Hold'/>)
 
             break;
             case 'selectTeam':
-                let rosterYear = document.getElementById('RosterYear').value    
-
-                let rawData = getTeams(rosterYear); //send the input year to the getTeams function
-                console.log('line 53 - log raw data response from getTeams()')
-                console.log('Roster Year:'+rosterYear)
-                console.log('App.selectTeam.rawData: '+rawData.then((value)=>{
-                    console.log(value)}))
-
-                //let numbers = [1,2,3,4,5];
-                /*const listItems = datas.map((data)=>
-                    <li>{data.mlb_org_brief}</li>
-                */
+ 
+            /*               let rosterYear = document.getElementById('RosterYear').value
                 
-                    page =
-                        <div>
-                            <ul>Please Hold</ul>
-                        </div>
+                fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27'+rosterYear+'%27')
+                    .then(prom =>prom.json())
+                    .then(data => {  
+                       let teamData=data.team_all_season.queryResults.row;
+                        //console.log(teamData);
+                        //console.log(teamData.length);       
+                        //teamCards.push(<TeamCards name='Paul'/>); 
+
+                        //data is the array response from MLB
+                        //loop through data with a map function and built the team cards
+                        teamCards = teamData.map((data)=>{                                                        
+                            console.log(data.name_display_full);
+                            return <TeamCards name='paul' />;                            
+                    });
+                        
+                    })
+                    .catch(err => console.log('Error: '+err));
+
+ */
+                /*
+                    // learning lists w/ map in react
+                    const numbers = [1,2,3,4,5]
+                    const doubled = numbers.map((number)=>number*2);
+                    console.log('doubled: '+doubled)
                     
-                    /*    <div> 
-                            <TeamTile
-                                onClick={this.handleTeamClick} 
-                                name = "Fuz Cats"
-                                teamName = 'The Fuzzy Caterpillars'
-                                venueName = 'Davis Dirt Ranch'
-                                league = 'CF'
-                            />
-                        </div>
-                    */
-                
+                    //BE CAREFUL USING CURLY BRACES ON THE ARROW FUNCTION *** IF YOU DO YOU MUST RETURN!
+                    listitems = doubled.map((number) =>{
+                       return <li>{number}</li>
+                })
+                */
+                   teamCards = data.map((teamData)=>{
+                       const{name_display_full} = teamData;
+                        
+                       return(
+                           <TeamCards 
+                                name={name_display_full}
+                                />
+                       )
+
+                   }) 
+                   //teamCards=<h4>CATS</h4>
             break;
         }
+
+        //console.log(teamCards);
 
         return(
             <div>
                 {ribbon}
-                {page}
+                {teamCards}                
             </div>
            )
     }
@@ -106,7 +158,7 @@ class Ribbon extends React.Component{
                                 className= "form-control"
                                 id="RosterYear"
                                 placeholder= "Enter a Year" 
-                                //defaultValue= "2020" 
+                                defaultValue= "2020" 
                             />                                                                          
                         </div>              
                         <div className="col">
@@ -127,7 +179,7 @@ class Ribbon extends React.Component{
     }
 }
 
-class TeamTile extends React.Component{
+class TeamCards extends React.Component{
     constructor(props){
         super(props);     
     }
@@ -157,7 +209,6 @@ class TeamTile extends React.Component{
         );
     }
 }
-
 
 function SearchBar(props){
     return(
@@ -191,59 +242,6 @@ function SubmitButton(props){
 function teamGo(){
     alert("Go!");
 }
-
-function getTeams (rosterYear){
- 
-//get mlb team data api
-let teamData = fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27'+rosterYear+'%27')
-        //.then(response => response.json())
-        .then(res =>res.json())
-        .then(data => data.team_all_season.queryResults)
-
-    return teamData
-        //.then(teams => console.log(data.team_all_season)))
-    //.then(data => console.log(data.team_all_season.queryResults.row))
-    
-    
-    
-}   
-
-    
-    // .then(function(teamData){
-    //     return teamData.value;
-
-    // })
-    /*.then(function(resp){
-        return resp.team_all_season.queryResults.row
-    })
-    */
-
-    /*
-    .then(function(resp){          
-
-        //get total array size
-        let totalSize = resp.team_all_season.queryResults.totalSize;
-
-        //loop through the array to populate your html
-        for(let i=0; i < totalSize; i++){
-            //mlb_org_brief
-            let Name=resp.team_all_season.queryResults.row[i].mlb_org_brief;                
-            //assign team name to var
-            let teamName = resp.team_all_season.queryResults.row[i].name_display_full;
-            //venue_name:
-            let venueName=resp.team_all_season.queryResults.row[i].venue_name;                
-            //league
-            let league = resp.team_all_season.queryResults.row[i].league;
-            //team_id
-            let teamId = resp.team_all_season.queryResults.row[i].team_id;
-            //generate the innerHTML 
-            teamCard(Name, teamName, venueName, league, i);
-            //add click event handler to team card
-            clickTeam(i, teamId, rosterYear);                             
-        }
-    })
-}
-*/
 
 ReactDOM.render(
    <App />,
