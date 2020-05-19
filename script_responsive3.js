@@ -41,21 +41,19 @@ var App = function (_React$Component) {
         }
     }, {
         key: 'handleTeamClick',
-        value: function handleTeamClick(team) {
-            alert('You clicked on the ' + team);
+        value: function handleTeamClick(teamID) {
+            //alert('You clicked on the '+team);
+            this.getPlayers(teamID);
         }
     }, {
         key: 'getTeams',
         value: function getTeams() {
             var _this2 = this;
 
-            console.log('you got the teams');
             var rosterYear = document.getElementById('RosterYear').value;
-
             fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27' + rosterYear + '%27').then(function (prom) {
                 return prom.json();
             }).then(function (data) {
-                var teamData = data.team_all_season.queryResults.row;
                 _this2.setState({
                     drillDown: 'selectTeam',
                     data: data.team_all_season.queryResults.row
@@ -66,19 +64,31 @@ var App = function (_React$Component) {
         }
     }, {
         key: 'getPlayers',
-        value: function getPlayers(team) {
-            console.log('team: ' + team);
-            alert('You farted on the ' + team.value);
+        value: function getPlayers(teamID) {
+            var _this3 = this;
+
+            console.log('team: ' + teamID);
+
+            fetch('http://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%272016%27&end_season=%272017%27&team_id=%27' + teamID + '%27').then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                _this3.setState({
+                    drillDown: 'selectPlayer',
+                    data: data.roster_team_alltime.queryResults.row
+                });
+            }).catch(function (err) {
+                return console.log('Error: ' + err);
+            });
         }
     }, {
         key: 'render',
         value: function render() {
-            var _this3 = this;
+            var _this4 = this;
 
             var drillDown = this.state.drillDown;
             var data = this.state.data;
             var ribbon = void 0;
-            var teamCards = [];
+            var dataDisplay = [];
 
             //ribbon here is a React Component
             ribbon = React.createElement(
@@ -97,16 +107,17 @@ var App = function (_React$Component) {
                 //TODO here you need to reference teamCard as a component
                 case 'searchYear':
                     //TODO depricate this later
-                    teamCards.push(React.createElement(TeamCards, { name: 'Please Hold' }));
+                    dataDisplay.push(React.createElement(TeamCards, { name: 'Please Hold' }));
 
                     break;
                 case 'selectTeam':
-                    teamCards = data.map(function (teamData) {
+                    dataDisplay = data.map(function (teamData) {
                         //add other parameters from the JSON here!
                         var name_display_full = teamData.name_display_full,
                             mlb_org_brief = teamData.mlb_org_brief,
                             venue_name = teamData.venue_name,
-                            division_abbrev = teamData.division_abbrev;
+                            division_abbrev = teamData.division_abbrev,
+                            mlb_org_id = teamData.mlb_org_id;
 
 
                         return (
@@ -117,20 +128,42 @@ var App = function (_React$Component) {
                                 venueName: venue_name,
                                 league: division_abbrev,
                                 onClick: function onClick() {
-                                    return _this3.handleTeamClick(mlb_org_brief);
+                                    return _this4.handleTeamClick(mlb_org_id);
                                 }
                             })
                         );
                     });
-
                     break;
+                case 'selectPlayer':
+                    dataDisplay = data.map(function (playerData) {
+                        var name_first_last = playerData.name_first_last,
+                            throws = playerData.throws,
+                            bats = playerData.bats,
+                            height_feet = playerData.height_feet,
+                            height_inches = playerData.height_inches,
+                            player_id = playerData.player_id,
+                            position_desig = playerData.position_desig,
+                            primary_position = playerData.primary_position,
+                            birth_date = playerData.birth_date,
+                            jersey_number = playerData.jersey_number;
+
+
+                        return React.createElement(PlayerCards, {
+                            playerName: name_first_last,
+                            posDes: position_desig,
+                            primPos: primary_position,
+                            bats: bats,
+                            throws: throws,
+                            jerseyNumber: jersey_number
+                        });
+                    });
             }
 
             return React.createElement(
                 'div',
                 null,
                 ribbon,
-                teamCards
+                dataDisplay
             );
         }
     }]);
@@ -259,6 +292,77 @@ var TeamCards = function (_React$Component3) {
     }]);
 
     return TeamCards;
+}(React.Component);
+
+var PlayerCards = function (_React$Component4) {
+    _inherits(PlayerCards, _React$Component4);
+
+    function PlayerCards(props) {
+        _classCallCheck(this, PlayerCards);
+
+        return _possibleConstructorReturn(this, (PlayerCards.__proto__ || Object.getPrototypeOf(PlayerCards)).call(this, props));
+    }
+
+    _createClass(PlayerCards, [{
+        key: 'render',
+        value: function render() {
+            return React.createElement(
+                'div',
+                { className: 'card bg-dark', onClick: this.props.onClick },
+                React.createElement(
+                    'div',
+                    { className: 'card-body bg-light team-card`+i+`' },
+                    React.createElement(
+                        'div',
+                        { className: 'row' },
+                        React.createElement(
+                            'div',
+                            { className: 'col-10' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body name' },
+                                this.props.playerName
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement(
+                                'p',
+                                { className: 'text-body' },
+                                '#',
+                                this.props.jerseyNumber
+                            )
+                        )
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'row' },
+                        React.createElement(
+                            'div',
+                            { className: 'col-10' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body name' },
+                                this.props.posDes.toLowerCase()
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement(
+                                'p',
+                                { className: 'text-body' },
+                                this.props.primPos
+                            )
+                        )
+                    )
+                )
+            );
+        }
+    }]);
+
+    return PlayerCards;
 }(React.Component);
 
 function SearchBar(props) {

@@ -23,18 +23,16 @@ class App extends React.Component{
         this.getTeams();
     }
 
-    handleTeamClick(team){
-        alert('You clicked on the '+team);
+    handleTeamClick(teamID){
+        //alert('You clicked on the '+team);
+        this.getPlayers(teamID)
     }
 
     getTeams(){
-        console.log ('you got the teams')
-        let rosterYear = document.getElementById('RosterYear').value
-                
+        let rosterYear = document.getElementById('RosterYear').value                
         fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27'+rosterYear+'%27')
             .then(prom =>prom.json())
             .then(data => {  
-                let teamData=data.team_all_season.queryResults.row;                             
                 this.setState({
                     drillDown: 'selectTeam',
                     data: data.team_all_season.queryResults.row
@@ -43,16 +41,26 @@ class App extends React.Component{
             .catch(err => console.log('Error: '+err));
     }
 
-    getPlayers(team){
-        console.log('team: '+team);
-        alert('You farted on the ' + team.value);
+    getPlayers(teamID){
+        console.log('team: '+teamID);
+        
+        fetch('http://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%272016%27&end_season=%272017%27&team_id=%27'+teamID+'%27')
+            .then(response => response.json())
+            .then(data => {
+                this.setState({
+                    drillDown: 'selectPlayer',
+                    data: data.roster_team_alltime.queryResults.row
+                })
+
+            })
+            .catch(err => console.log('Error: '+err));
     }
 
     render(){
         const drillDown= this.state.drillDown;
         const data = this.state.data;
         let ribbon;
-        let teamCards = [];
+        let dataDisplay = [];
 
         //ribbon here is a React Component
         ribbon=
@@ -70,17 +78,18 @@ class App extends React.Component{
             //TODO here you need to reference teamCard as a component
             case 'searchYear':
                 //TODO depricate this later
-                teamCards.push(<TeamCards name='Please Hold'/>)
+                dataDisplay.push(<TeamCards name='Please Hold'/>)
 
             break;
             case 'selectTeam':
-                teamCards = data.map((teamData)=>{
+                dataDisplay = data.map((teamData)=>{
                     //add other parameters from the JSON here!
                     const{
                             name_display_full,
                             mlb_org_brief,
                             venue_name,
-                            division_abbrev
+                            division_abbrev,
+                            mlb_org_id
                         } = teamData;
                     
                     return(
@@ -90,18 +99,43 @@ class App extends React.Component{
                             teamName={name_display_full}
                             venueName={venue_name}
                             league={division_abbrev}
-                            onClick={() => this.handleTeamClick(mlb_org_brief)}
+                            onClick={() => this.handleTeamClick(mlb_org_id)}
                             />
                     )
-                }) 
-
+                })
             break;
+            case 'selectPlayer':
+                dataDisplay = data.map((playerData)=>{
+                    const{
+                        name_first_last,
+                        throws,
+                        bats,
+                        height_feet,
+                        height_inches,
+                        player_id,
+                        position_desig,
+                        primary_position,
+                        birth_date,
+                        jersey_number
+                    }=playerData;
+
+                    return(
+                        <PlayerCards
+                            playerName={name_first_last}
+                            posDes={position_desig}
+                            primPos={primary_position}
+                            bats={bats}
+                            throws={throws}
+                            jerseyNumber={jersey_number}
+                        />
+                    )
+                })
         }
 
         return(
             <div>
                 {ribbon}
-                {teamCards}                
+                {dataDisplay}                
             </div>
            )
     }
@@ -172,6 +206,36 @@ class TeamCards extends React.Component{
             
                 </div>
             </div>   
+        );
+    }
+}
+
+class PlayerCards extends React.Component{
+    constructor(props){
+        super(props);     
+    }
+    render() {
+        return(
+            <div className="card bg-dark" onClick={this.props.onClick}>    
+                <div className="card-body bg-light team-card`+i+`">    
+                    <div className="row">
+                        <div className="col-10">
+                            <p className="card-text text-body name">{this.props.playerName}</p>
+                        </div>
+                        <div className="col-2">
+                            <p className="text-body">#{this.props.jerseyNumber}</p>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-10">
+                            <p className="card-text text-body name">{this.props.posDes.toLowerCase()}</p>
+                        </div>
+                        <div className="col-2">
+                            <p className="text-body">{this.props.primPos}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>  
         );
     }
 }
