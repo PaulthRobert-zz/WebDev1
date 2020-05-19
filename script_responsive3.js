@@ -41,12 +41,9 @@ var App = function (_React$Component) {
         }
     }, {
         key: 'handleTeamClick',
-        value: function handleTeamClick() {
-            alert('You clicked a team');
+        value: function handleTeamClick(team) {
+            alert('You clicked on the ' + team);
         }
-    }, {
-        key: 'componentDidMount',
-        value: function componentDidMount() {}
     }, {
         key: 'getTeams',
         value: function getTeams() {
@@ -59,16 +56,6 @@ var App = function (_React$Component) {
                 return prom.json();
             }).then(function (data) {
                 var teamData = data.team_all_season.queryResults.row;
-                //console.log(teamData);
-                //console.log(teamData.length);       
-                //teamCards.push(<TeamCards name='Paul'/>); 
-
-                //data is the array response from MLB
-                //loop through data with a map function and built the team cards
-                /*teamCards = teamData.map((data)=>{                                                        
-                    console.log(data.name_display_full);
-                    return <TeamCards name='paul' />;
-                 */
                 _this2.setState({
                     drillDown: 'selectTeam',
                     data: data.team_all_season.queryResults.row
@@ -78,8 +65,16 @@ var App = function (_React$Component) {
             });
         }
     }, {
+        key: 'getPlayers',
+        value: function getPlayers(team) {
+            console.log('team: ' + team);
+            alert('You farted on the ' + team.value);
+        }
+    }, {
         key: 'render',
         value: function render() {
+            var _this3 = this;
+
             var drillDown = this.state.drillDown;
             var data = this.state.data;
             var ribbon = void 0;
@@ -106,50 +101,30 @@ var App = function (_React$Component) {
 
                     break;
                 case 'selectTeam':
-
-                    /*               let rosterYear = document.getElementById('RosterYear').value
-                        
-                        fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27'+rosterYear+'%27')
-                            .then(prom =>prom.json())
-                            .then(data => {  
-                               let teamData=data.team_all_season.queryResults.row;
-                                //console.log(teamData);
-                                //console.log(teamData.length);       
-                                //teamCards.push(<TeamCards name='Paul'/>); 
-                                  //data is the array response from MLB
-                                //loop through data with a map function and built the team cards
-                                teamCards = teamData.map((data)=>{                                                        
-                                    console.log(data.name_display_full);
-                                    return <TeamCards name='paul' />;                            
-                            });
-                                
-                            })
-                            .catch(err => console.log('Error: '+err));
-                    */
-                    /*
-                        // learning lists w/ map in react
-                        const numbers = [1,2,3,4,5]
-                        const doubled = numbers.map((number)=>number*2);
-                        console.log('doubled: '+doubled)
-                        
-                        //BE CAREFUL USING CURLY BRACES ON THE ARROW FUNCTION *** IF YOU DO YOU MUST RETURN!
-                        listitems = doubled.map((number) =>{
-                           return <li>{number}</li>
-                    })
-                    */
                     teamCards = data.map(function (teamData) {
-                        var name_display_full = teamData.name_display_full;
+                        //add other parameters from the JSON here!
+                        var name_display_full = teamData.name_display_full,
+                            mlb_org_brief = teamData.mlb_org_brief,
+                            venue_name = teamData.venue_name,
+                            division_abbrev = teamData.division_abbrev;
 
 
-                        return React.createElement(TeamCards, {
-                            name: name_display_full
-                        });
+                        return (
+                            //and then here!
+                            React.createElement(TeamCards, {
+                                name: mlb_org_brief,
+                                teamName: name_display_full,
+                                venueName: venue_name,
+                                league: division_abbrev,
+                                onClick: function onClick() {
+                                    return _this3.handleTeamClick(mlb_org_brief);
+                                }
+                            })
+                        );
                     });
-                    //teamCards=<h4>CATS</h4>
+
                     break;
             }
-
-            //console.log(teamCards);
 
             return React.createElement(
                 'div',
@@ -261,7 +236,7 @@ var TeamCards = function (_React$Component3) {
                         { className: 'row' },
                         React.createElement(
                             'div',
-                            { className: 'col-10' },
+                            { className: 'col-9' },
                             React.createElement(
                                 'p',
                                 { className: 'card-text text-body' },
@@ -270,7 +245,7 @@ var TeamCards = function (_React$Component3) {
                         ),
                         React.createElement(
                             'div',
-                            { className: 'col-2' },
+                            { className: 'col-3' },
                             React.createElement(
                                 'p',
                                 { className: 'card-text text-body cust-card-text-right' },

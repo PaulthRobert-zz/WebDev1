@@ -23,12 +23,8 @@ class App extends React.Component{
         this.getTeams();
     }
 
-    handleTeamClick(){
-        alert('You clicked a team');
-    }
-
-    componentDidMount(){
-       
+    handleTeamClick(team){
+        alert('You clicked on the '+team);
     }
 
     getTeams(){
@@ -38,23 +34,18 @@ class App extends React.Component{
         fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27'+rosterYear+'%27')
             .then(prom =>prom.json())
             .then(data => {  
-               let teamData=data.team_all_season.queryResults.row;
-                //console.log(teamData);
-                //console.log(teamData.length);       
-                //teamCards.push(<TeamCards name='Paul'/>); 
-
-                //data is the array response from MLB
-                //loop through data with a map function and built the team cards
-                /*teamCards = teamData.map((data)=>{                                                        
-                    console.log(data.name_display_full);
-                    return <TeamCards name='paul' />;
-                 */                               
+                let teamData=data.team_all_season.queryResults.row;                             
                 this.setState({
                     drillDown: 'selectTeam',
                     data: data.team_all_season.queryResults.row
                 });
             })
             .catch(err => console.log('Error: '+err));
+    }
+
+    getPlayers(team){
+        console.log('team: '+team);
+        alert('You farted on the ' + team.value);
     }
 
     render(){
@@ -83,54 +74,29 @@ class App extends React.Component{
 
             break;
             case 'selectTeam':
- 
-            /*               let rosterYear = document.getElementById('RosterYear').value
-                
-                fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27'+rosterYear+'%27')
-                    .then(prom =>prom.json())
-                    .then(data => {  
-                       let teamData=data.team_all_season.queryResults.row;
-                        //console.log(teamData);
-                        //console.log(teamData.length);       
-                        //teamCards.push(<TeamCards name='Paul'/>); 
-
-                        //data is the array response from MLB
-                        //loop through data with a map function and built the team cards
-                        teamCards = teamData.map((data)=>{                                                        
-                            console.log(data.name_display_full);
-                            return <TeamCards name='paul' />;                            
-                    });
-                        
-                    })
-                    .catch(err => console.log('Error: '+err));
-
- */
-                /*
-                    // learning lists w/ map in react
-                    const numbers = [1,2,3,4,5]
-                    const doubled = numbers.map((number)=>number*2);
-                    console.log('doubled: '+doubled)
+                teamCards = data.map((teamData)=>{
+                    //add other parameters from the JSON here!
+                    const{
+                            name_display_full,
+                            mlb_org_brief,
+                            venue_name,
+                            division_abbrev
+                        } = teamData;
                     
-                    //BE CAREFUL USING CURLY BRACES ON THE ARROW FUNCTION *** IF YOU DO YOU MUST RETURN!
-                    listitems = doubled.map((number) =>{
-                       return <li>{number}</li>
-                })
-                */
-                   teamCards = data.map((teamData)=>{
-                       const{name_display_full} = teamData;
-                        
-                       return(
-                           <TeamCards 
-                                name={name_display_full}
-                                />
-                       )
+                    return(
+                        //and then here!
+                        <TeamCards 
+                            name={mlb_org_brief}
+                            teamName={name_display_full}
+                            venueName={venue_name}
+                            league={division_abbrev}
+                            onClick={() => this.handleTeamClick(mlb_org_brief)}
+                            />
+                    )
+                }) 
 
-                   }) 
-                   //teamCards=<h4>CATS</h4>
             break;
         }
-
-        //console.log(teamCards);
 
         return(
             <div>
@@ -196,10 +162,10 @@ class TeamCards extends React.Component{
                         </div>
                     </div>
                     <div className="row">                                
-                        <div className = "col-10">
+                        <div className = "col-9">
                             <p className="card-text text-body">{this.props.venueName}</p>
                         </div>
-                        <div className = "col-2">
+                        <div className = "col-3">
                             <p className="card-text text-body cust-card-text-right">{this.props.league}</p>
                         </div>
                     </div>
@@ -235,7 +201,6 @@ function SubmitButton(props){
         > 
             {props.caption} 
         </button>
-
     )
 }
 
