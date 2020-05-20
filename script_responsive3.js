@@ -20,6 +20,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         position type
         primary position
 
+    - look into using these premade react components https://material-ui.com/components/badges/
+
 */
 
 //typically new react apps have a single app component at the very top
@@ -87,7 +89,7 @@ var App = function (_React$Component) {
 
             var rosterYear = document.getElementById('RosterYear').value;
             console.log(rosterYear);
-            fetch('http://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%27' + 2016 + '%27&end_season=%27' + 2016 + '%27&team_id=%27' + teamID + '%27').then(function (response) {
+            fetch('https://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%27' + 2016 + '%27&end_season=%27' + 2016 + '%27&team_id=%27' + teamID + '%27').then(function (response) {
                 return response.json();
             }).then(function (data) {
                 _this3.setState({
@@ -107,27 +109,28 @@ var App = function (_React$Component) {
 
             var rosterYear = document.getElementById('RosterYear').value;
 
+            //TODO - rewrite these as `https://${variable}`
             //fetches
             //player info          http://lookup-service-prod.mlb.com/json/named.player_info.bam?sport_code=%27mlb%27&player_id=%27493316%27
-            var playerInfoAPI = 'http://lookup-service-prod.mlb.com/json/named.player_info.bam?sport_code=%27mlb%27&player_id=%27' + playerID + '%27';
+            var playerInfoAPI = 'https://lookup-service-prod.mlb.com/json/named.player_info.bam?sport_code=%27mlb%27&player_id=%27' + playerID + '%27';
 
             //season hitting http://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27493316%27
-            var seasonHittingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27' + rosterYear + '%27&player_id=%' + playerID + '%27';
+            var seasonHittingAPI = 'https://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27\'' + rosterYear + '%27&player_id=%' + playerID + '%27';
 
             //season pitching http://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27592789%27
-            var seasonPitchingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27592789%27';
+            var seasonPitchingAPI = 'https://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27' + rosterYear + '%27&player_id=%' + playerID + '%27';
 
             //career hitting 'http://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%'+playerID+'%27'
-            var careerHittingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%' + playerID + '%27';
+            var careerHittingAPI = 'https://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%' + playerID + '%27';
 
             //career pitching  http://lookup-service-prod.mlb.com/json/named.sport_career_pitching.bam?league_list_id='mlb'&game_type='R'&player_id='592789'
-            var careerPitchingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_career_pitching.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%' + playerID + '%27';
+            var careerPitchingAPI = 'https://lookup-service-prod.mlb.com/json/named.sport_career_pitching.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%' + playerID + '%27';
 
             //projected hitting https://appac.github.io/mlb-data-api-docs/#stats-data-projected-hitting-stats-get
             var projectedHittingAPI = 'https://appac.github.io/mlb-data-api-docs/#stats-data-projected-hitting-stats-get';
 
             //projected pitching https://appac.github.io/mlb-data-api-docs/#stats-data-projected-pitching-stats-get
-            var projectedPitchingAPI = ' http://lookup-service-prod.mlb.com/json/named.proj_pecota_pitching.bam?season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
+            var projectedPitchingAPI = 'https://lookup-service-prod.mlb.com/json/named.proj_pecota_pitching.bam?season=%27' + rosterYear + '%27&player_id=%27\'' + playerID + '%27';
 
             fetch(playerInfoAPI).then(function (response) {
                 return response.json();
@@ -222,15 +225,23 @@ var App = function (_React$Component) {
                     });
                     break;
                 case 'playerStats':
-                    dataDisplay = data.map(function (playerStats) {
-                        var name_display_first_last = playerStats.name_display_first_last;
 
-                        return React.createElement(PlayerStats, {
-                            name: name_display_first_last
-                        });
+                    var inches = data['height_in'];
+
+                    if (inches == null) {
+                        console.log('null');
+                    };
+
+                    dataDisplay = React.createElement(PlayerStats, {
+                        name: data['name_display_first_last'],
+                        age: data['age'],
+                        ft: data['height_feet'],
+                        'in': data['height_inches'],
+                        weight: data['weight'],
+                        jerseyNumber: data['jersey_number']
                     });
-                    break;
 
+                    break;
             }
 
             return React.createElement(
@@ -473,7 +484,7 @@ var PlayerStats = function (_React$Component5) {
                         { className: 'row' },
                         React.createElement(
                             'div',
-                            { className: 'col-5' },
+                            { className: 'col-4' },
                             React.createElement(
                                 'p',
                                 { className: 'card-text text-body' },
@@ -482,18 +493,45 @@ var PlayerStats = function (_React$Component5) {
                         ),
                         React.createElement(
                             'div',
-                            { className: 'col-3' },
-                            React.createElement('p', { className: 'card-text text-body cust-card-text-right' })
+                            { className: 'col-2' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body cust-card-text-right' },
+                                this.props.age,
+                                '"'
+                            )
                         ),
                         React.createElement(
                             'div',
                             { className: 'col-2' },
-                            React.createElement('p', { className: 'card-text text-body cust-card-text-right' })
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body cust-card-text-right' },
+                                this.props.ft,
+                                '\' ',
+                                this.props.in,
+                                '"'
+                            )
                         ),
                         React.createElement(
                             'div',
                             { className: 'col-2' },
-                            React.createElement('p', { className: 'card-text text-body cust-card-text-right' })
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body cust-card-text-right' },
+                                this.props.weight,
+                                ' lbs'
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body cust-card-text-right' },
+                                '#',
+                                this.props.jerseyNumber
+                            )
                         )
                     )
                 )

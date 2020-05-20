@@ -12,6 +12,8 @@
         position type
         primary position
 
+    - look into using these premade react components https://material-ui.com/components/badges/
+
 */
 
 //typically new react apps have a single app component at the very top
@@ -61,7 +63,7 @@ class App extends React.Component{
     getPlayers(teamID){
         let rosterYear = document.getElementById('RosterYear').value;
         console.log(rosterYear);
-        fetch('http://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%27'+2016+'%27&end_season=%27'+2016+'%27&team_id=%27'+teamID+'%27')
+        fetch('https://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%27'+2016+'%27&end_season=%27'+2016+'%27&team_id=%27'+teamID+'%27')
             .then(response => response.json())
             .then(data => {
                 this.setState({
@@ -77,27 +79,28 @@ class App extends React.Component{
 
         let rosterYear = document.getElementById('RosterYear').value;
 
+        //TODO - rewrite these as `https://${variable}`
         //fetches
             //player info          http://lookup-service-prod.mlb.com/json/named.player_info.bam?sport_code=%27mlb%27&player_id=%27493316%27
-            const playerInfoAPI = 'http://lookup-service-prod.mlb.com/json/named.player_info.bam?sport_code=%27mlb%27&player_id=%27'+playerID+'%27'
+            const playerInfoAPI = `https://lookup-service-prod.mlb.com/json/named.player_info.bam?sport_code=%27mlb%27&player_id=%27${playerID}%27`
             
             //season hitting http://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27493316%27
-            const seasonHittingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27'+rosterYear+'%27&player_id=%'+playerID+'%27'
+            const seasonHittingAPI = `https://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27'${rosterYear}%27&player_id=%${playerID}%27`
             
             //season pitching http://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27592789%27
-            const seasonPitchingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27592789%27'
+            const seasonPitchingAPI = `https://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27${rosterYear}%27&player_id=%${playerID}%27`
             
             //career hitting 'http://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%'+playerID+'%27'
-            const careerHittingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%'+playerID+'%27'
+            const careerHittingAPI = `https://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%${playerID}%27`
             
             //career pitching  http://lookup-service-prod.mlb.com/json/named.sport_career_pitching.bam?league_list_id='mlb'&game_type='R'&player_id='592789'
-            const careerPitchingAPI ='http://lookup-service-prod.mlb.com/json/named.sport_career_pitching.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%'+playerID+'%27'
+            const careerPitchingAPI =`https://lookup-service-prod.mlb.com/json/named.sport_career_pitching.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%${playerID}%27`
             
             //projected hitting https://appac.github.io/mlb-data-api-docs/#stats-data-projected-hitting-stats-get
-            const projectedHittingAPI ='https://appac.github.io/mlb-data-api-docs/#stats-data-projected-hitting-stats-get'
+            const projectedHittingAPI =`https://appac.github.io/mlb-data-api-docs/#stats-data-projected-hitting-stats-get`
             
             //projected pitching https://appac.github.io/mlb-data-api-docs/#stats-data-projected-pitching-stats-get
-            const projectedPitchingAPI =' http://lookup-service-prod.mlb.com/json/named.proj_pecota_pitching.bam?season=%27'+rosterYear+'%27&player_id=%27'+playerID+'%27'
+            const projectedPitchingAPI =`https://lookup-service-prod.mlb.com/json/named.proj_pecota_pitching.bam?season=%27${rosterYear}%27&player_id=%27'${playerID}%27`
             
             fetch(playerInfoAPI)
                 .then(response => response.json())
@@ -108,8 +111,7 @@ class App extends React.Component{
                         })
                 })
                 .catch(err=> console.log(err));
-            
-            
+                        
 
     }
 
@@ -189,19 +191,23 @@ class App extends React.Component{
                     )
                 })
                 break;
-                case 'playerStats': 
-                    dataDisplay= data.map((playerStats)=>{
-                        const{
-                            name_display_first_last
-                        }=playerStats
-                        return(
-                        <PlayerStats
-                            name={name_display_first_last}
-                        />
-                        )
-                    })
-                break;
+                case 'playerStats':
+                    
+                const inches = data['height_in'];
 
+                if(inches == null){console.log('null')};
+
+                dataDisplay=                         
+                    <PlayerStats
+                        name= {data['name_display_first_last']}
+                        age={data['age']}
+                        ft={data['height_feet']}
+                        in={data['height_inches']}
+                        weight={data['weight']}
+                        jerseyNumber={data['jersey_number']}
+                    />
+                        
+                break;
         }
 
         return(
@@ -326,17 +332,20 @@ class PlayerStats extends React.Component{
             <div className="card bg-dark" onClick={this.props.onClick}>    
                 <div className="card-body bg-light team-card">    
                     <div className="row">
-                        <div className="col-5">
+                        <div className="col-4">
                             <p className="card-text text-body">{this.props.name}</p>
                         </div>
-                        <div className="col-3">
-                            <p className="card-text text-body cust-card-text-right"></p>
+                        <div className="col-2">
+                            <p className="card-text text-body cust-card-text-right">{this.props.age}"</p>
                         </div>
                         <div className="col-2">
-                            <p className="card-text text-body cust-card-text-right"></p>
+                            <p className="card-text text-body cust-card-text-right">{this.props.ft}' {this.props.in}"</p>
                         </div>
                         <div className="col-2">
-                            <p className="card-text text-body cust-card-text-right"></p>
+                            <p className="card-text text-body cust-card-text-right">{this.props.weight} lbs</p>
+                        </div>
+                        <div className="col-2">
+                            <p className="card-text text-body cust-card-text-right">#{this.props.jerseyNumber}</p>
                         </div>
                     </div>
                 </div>
