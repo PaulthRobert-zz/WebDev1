@@ -2,6 +2,18 @@
 // js.react
 // babel > jsx
 
+/* Things TODO
+    - add a back button
+    - add sort by 
+        position type
+        primary position
+
+    - add filter by
+        position type
+        primary position
+
+*/
+
 //typically new react apps have a single app component at the very top
 
 class App extends React.Component{
@@ -12,6 +24,7 @@ class App extends React.Component{
             data: []}
         this.handleSubmitButtonClick = this.handleSubmitButtonClick.bind(this);
         this.handleTeamClick = this.handleTeamClick.bind(this);
+        this.handlePlayerClick = this.handlePlayerClick.bind(this);
         
         //states to move through the levels of drill down
             //searchYear
@@ -28,8 +41,12 @@ class App extends React.Component{
         this.getPlayers(teamID)
     }
 
+    handlePlayerClick(playerID){
+        this.getPlayer(playerID);
+    }
+
     getTeams(){
-        let rosterYear = document.getElementById('RosterYear').value                
+        let rosterYear = document.getElementById('RosterYear').value;                
         fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27'+rosterYear+'%27')
             .then(prom =>prom.json())
             .then(data => {  
@@ -42,18 +59,58 @@ class App extends React.Component{
     }
 
     getPlayers(teamID){
-        console.log('team: '+teamID);
-        
-        fetch('http://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%272016%27&end_season=%272017%27&team_id=%27'+teamID+'%27')
+        let rosterYear = document.getElementById('RosterYear').value;
+        console.log(rosterYear);
+        fetch('http://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%27'+2016+'%27&end_season=%27'+2016+'%27&team_id=%27'+teamID+'%27')
             .then(response => response.json())
             .then(data => {
                 this.setState({
                     drillDown: 'selectPlayer',
                     data: data.roster_team_alltime.queryResults.row
                 })
-
             })
             .catch(err => console.log('Error: '+err));
+    }
+
+    getPlayer(playerID){
+        console.log('playerid: '+playerID);
+
+        let rosterYear = document.getElementById('RosterYear').value;
+
+        //fetches
+            //player info          http://lookup-service-prod.mlb.com/json/named.player_info.bam?sport_code=%27mlb%27&player_id=%27493316%27
+            const playerInfoAPI = 'http://lookup-service-prod.mlb.com/json/named.player_info.bam?sport_code=%27mlb%27&player_id=%27'+playerID+'%27'
+            
+            //season hitting http://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27493316%27
+            const seasonHittingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27'+rosterYear+'%27&player_id=%'+playerID+'%27'
+            
+            //season pitching http://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27592789%27
+            const seasonPitchingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27592789%27'
+            
+            //career hitting 'http://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%'+playerID+'%27'
+            const careerHittingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%'+playerID+'%27'
+            
+            //career pitching  http://lookup-service-prod.mlb.com/json/named.sport_career_pitching.bam?league_list_id='mlb'&game_type='R'&player_id='592789'
+            const careerPitchingAPI ='http://lookup-service-prod.mlb.com/json/named.sport_career_pitching.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%'+playerID+'%27'
+            
+            //projected hitting https://appac.github.io/mlb-data-api-docs/#stats-data-projected-hitting-stats-get
+            const projectedHittingAPI ='https://appac.github.io/mlb-data-api-docs/#stats-data-projected-hitting-stats-get'
+            
+            //projected pitching https://appac.github.io/mlb-data-api-docs/#stats-data-projected-pitching-stats-get
+            const projectedPitchingAPI =' http://lookup-service-prod.mlb.com/json/named.proj_pecota_pitching.bam?season=%27'+rosterYear+'%27&player_id=%27'+playerID+'%27'
+            
+            fetch(playerInfoAPI)
+                .then(response => response.json())
+                .then(data => {
+                        this.setState({
+                            drillDown: 'playerStats',
+                            data: data.player_info.queryResults.row
+                        })
+                })
+                .catch(err=> console.log(err));
+            
+            
+
     }
 
     render(){
@@ -127,9 +184,24 @@ class App extends React.Component{
                             bats={bats}
                             throws={throws}
                             jerseyNumber={jersey_number}
+                            onClick={() => this.handlePlayerClick(player_id)}
                         />
                     )
                 })
+                break;
+                case 'playerStats': 
+                    dataDisplay= data.map((playerStats)=>{
+                        const{
+                            name_display_first_last
+                        }=playerStats
+                        return(
+                        <PlayerStats
+                            name={name_display_first_last}
+                        />
+                        )
+                    })
+                break;
+
         }
 
         return(
@@ -245,7 +317,33 @@ class PlayerCards extends React.Component{
         );
     }
 }
-
+class PlayerStats extends React.Component{
+    constructor(props){
+        super(props);     
+    }
+    render() {
+        return(
+            <div className="card bg-dark" onClick={this.props.onClick}>    
+                <div className="card-body bg-light team-card">    
+                    <div className="row">
+                        <div className="col-5">
+                            <p className="card-text text-body">{this.props.name}</p>
+                        </div>
+                        <div className="col-3">
+                            <p className="card-text text-body cust-card-text-right"></p>
+                        </div>
+                        <div className="col-2">
+                            <p className="card-text text-body cust-card-text-right"></p>
+                        </div>
+                        <div className="col-2">
+                            <p className="card-text text-body cust-card-text-right"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+        );
+    }
+}
 function SearchBar(props){
     return(
         <div className="form-group">

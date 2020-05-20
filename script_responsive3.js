@@ -10,6 +10,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 // js.react
 // babel > jsx
 
+/* Things TODO
+    - add a back button
+    - add sort by 
+        position type
+        primary position
+
+    - add filter by
+        position type
+        primary position
+
+*/
+
 //typically new react apps have a single app component at the very top
 
 var App = function (_React$Component) {
@@ -25,6 +37,7 @@ var App = function (_React$Component) {
             data: [] };
         _this.handleSubmitButtonClick = _this.handleSubmitButtonClick.bind(_this);
         _this.handleTeamClick = _this.handleTeamClick.bind(_this);
+        _this.handlePlayerClick = _this.handlePlayerClick.bind(_this);
 
         //states to move through the levels of drill down
         //searchYear
@@ -44,6 +57,11 @@ var App = function (_React$Component) {
         value: function handleTeamClick(teamID) {
             //alert('You clicked on the '+team);
             this.getPlayers(teamID);
+        }
+    }, {
+        key: 'handlePlayerClick',
+        value: function handlePlayerClick(playerID) {
+            this.getPlayer(playerID);
         }
     }, {
         key: 'getTeams',
@@ -67,9 +85,9 @@ var App = function (_React$Component) {
         value: function getPlayers(teamID) {
             var _this3 = this;
 
-            console.log('team: ' + teamID);
-
-            fetch('http://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%272016%27&end_season=%272017%27&team_id=%27' + teamID + '%27').then(function (response) {
+            var rosterYear = document.getElementById('RosterYear').value;
+            console.log(rosterYear);
+            fetch('http://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%27' + 2016 + '%27&end_season=%27' + 2016 + '%27&team_id=%27' + teamID + '%27').then(function (response) {
                 return response.json();
             }).then(function (data) {
                 _this3.setState({
@@ -81,9 +99,51 @@ var App = function (_React$Component) {
             });
         }
     }, {
+        key: 'getPlayer',
+        value: function getPlayer(playerID) {
+            var _this4 = this;
+
+            console.log('playerid: ' + playerID);
+
+            var rosterYear = document.getElementById('RosterYear').value;
+
+            //fetches
+            //player info          http://lookup-service-prod.mlb.com/json/named.player_info.bam?sport_code=%27mlb%27&player_id=%27493316%27
+            var playerInfoAPI = 'http://lookup-service-prod.mlb.com/json/named.player_info.bam?sport_code=%27mlb%27&player_id=%27' + playerID + '%27';
+
+            //season hitting http://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27493316%27
+            var seasonHittingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27' + rosterYear + '%27&player_id=%' + playerID + '%27';
+
+            //season pitching http://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27592789%27
+            var seasonPitchingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27592789%27';
+
+            //career hitting 'http://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%'+playerID+'%27'
+            var careerHittingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%' + playerID + '%27';
+
+            //career pitching  http://lookup-service-prod.mlb.com/json/named.sport_career_pitching.bam?league_list_id='mlb'&game_type='R'&player_id='592789'
+            var careerPitchingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_career_pitching.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%' + playerID + '%27';
+
+            //projected hitting https://appac.github.io/mlb-data-api-docs/#stats-data-projected-hitting-stats-get
+            var projectedHittingAPI = 'https://appac.github.io/mlb-data-api-docs/#stats-data-projected-hitting-stats-get';
+
+            //projected pitching https://appac.github.io/mlb-data-api-docs/#stats-data-projected-pitching-stats-get
+            var projectedPitchingAPI = ' http://lookup-service-prod.mlb.com/json/named.proj_pecota_pitching.bam?season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
+
+            fetch(playerInfoAPI).then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                _this4.setState({
+                    drillDown: 'playerStats',
+                    data: data.player_info.queryResults.row
+                });
+            }).catch(function (err) {
+                return console.log(err);
+            });
+        }
+    }, {
         key: 'render',
         value: function render() {
-            var _this4 = this;
+            var _this5 = this;
 
             var drillDown = this.state.drillDown;
             var data = this.state.data;
@@ -128,7 +188,7 @@ var App = function (_React$Component) {
                                 venueName: venue_name,
                                 league: division_abbrev,
                                 onClick: function onClick() {
-                                    return _this4.handleTeamClick(mlb_org_id);
+                                    return _this5.handleTeamClick(mlb_org_id);
                                 }
                             })
                         );
@@ -154,9 +214,23 @@ var App = function (_React$Component) {
                             primPos: primary_position,
                             bats: bats,
                             throws: throws,
-                            jerseyNumber: jersey_number
+                            jerseyNumber: jersey_number,
+                            onClick: function onClick() {
+                                return _this5.handlePlayerClick(player_id);
+                            }
                         });
                     });
+                    break;
+                case 'playerStats':
+                    dataDisplay = data.map(function (playerStats) {
+                        var name_display_first_last = playerStats.name_display_first_last;
+
+                        return React.createElement(PlayerStats, {
+                            name: name_display_first_last
+                        });
+                    });
+                    break;
+
             }
 
             return React.createElement(
@@ -374,6 +448,60 @@ var PlayerCards = function (_React$Component4) {
     }]);
 
     return PlayerCards;
+}(React.Component);
+
+var PlayerStats = function (_React$Component5) {
+    _inherits(PlayerStats, _React$Component5);
+
+    function PlayerStats(props) {
+        _classCallCheck(this, PlayerStats);
+
+        return _possibleConstructorReturn(this, (PlayerStats.__proto__ || Object.getPrototypeOf(PlayerStats)).call(this, props));
+    }
+
+    _createClass(PlayerStats, [{
+        key: 'render',
+        value: function render() {
+            return React.createElement(
+                'div',
+                { className: 'card bg-dark', onClick: this.props.onClick },
+                React.createElement(
+                    'div',
+                    { className: 'card-body bg-light team-card' },
+                    React.createElement(
+                        'div',
+                        { className: 'row' },
+                        React.createElement(
+                            'div',
+                            { className: 'col-5' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body' },
+                                this.props.name
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-3' },
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-right' })
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-right' })
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-right' })
+                        )
+                    )
+                )
+            );
+        }
+    }]);
+
+    return PlayerStats;
 }(React.Component);
 
 function SearchBar(props) {
