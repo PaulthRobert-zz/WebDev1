@@ -92,7 +92,7 @@ var App = function (_React$Component) {
 
             var rosterYear = document.getElementById('RosterYear').value;
             console.log(rosterYear);
-            fetch('https://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%27' + 2016 + '%27&end_season=%27' + 2016 + '%27&team_id=%27' + teamID + '%27').then(function (response) {
+            fetch('https://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%27' + rosterYear + '%27&end_season=%27' + rosterYear + '%27&team_id=%27' + teamID + '%27').then(function (response) {
                 return response.json();
             }).then(function (data) {
                 _this3.setState({
@@ -157,17 +157,28 @@ var App = function (_React$Component) {
             var dataDisplay = [];
 
             //ribbon here is a React Component
-            ribbon = React.createElement(Ribbon, {
-                onSubmit: this.handleSubmit,
-                searchBarID: 'RosterYear',
-                label: 'MLB Year'
+            ribbon = React.createElement(Ribbon
+            //Search bar props
+            , { onSubmit: this.handleSubmit
+
+                // parentDivClassName='form-group'
+                , labelFor: 'MLB Roster Year',
+                label: 'MLB Year',
+                type: 'number',
+                searchBarClassName: 'form-control',
+                searchBarID: 'RosterYear'
+                //placeholder=
+                , defaultValue: '2020'
+
+                //Submit Button props
+                , buttonClassName: 'btn btn-primary mb-2'
             });
 
             switch (drillDown) {
                 //TODO here you need to reference teamCard as a component
                 case 'searchYear':
                     //TODO depricate this later
-                    dataDisplay.push(React.createElement(TeamCards, { name: 'Please Hold' }));
+                    dataDisplay.push(React.createElement('div', null));
 
                     break;
                 case 'selectTeam':
@@ -252,44 +263,6 @@ var App = function (_React$Component) {
 
     return App;
 }(React.Component);
-/*
-class Ribbon extends React.Component{
-    constructor(props){
-        super(props);
-    }
-
-    render(){
-        return(
-                <form className="bg-dark">            
-                    <div className="form-row">  
-                        <div className="col">
-                            <SearchBar
-                                label= 'MLB Season'
-                                type="year" 
-                                className= "form-control"
-                                id="RosterYear"
-                                placeholder= "Enter a Year" 
-                                defaultValue= "2020" 
-                            />                                                                          
-                        </div>              
-                        <div className="col">
-                            <div className = "position-absolute mid-center">
-                                <SubmitButton
-                                    id ={this.props.id} //"btn" 
-                                    type={this.props.type} //"button"
-                                    className={this.props.className} //"btn btn-primary"
-                                    caption={this.props.caption} //"Go"
-                                    onClick={this.props.onClick} //DrillDownControl.handleSubmitButtonClick}    
-                                />
-                            </div>
-                            
-                        </div>                
-                    </div>
-                </form>
-        )
-    }
-}
-*/
 
 var Ribbon = function (_React$Component2) {
     _inherits(Ribbon, _React$Component2);
@@ -324,15 +297,50 @@ var Ribbon = function (_React$Component2) {
         value: function render() {
             return React.createElement(
                 'form',
-                { onSubmit: this.props.onSubmit },
-                React.createElement(SearchBar, {
-                    label: this.props.label,
-                    value: this.state.value,
-                    onChange: this.handleChange,
-                    id: this.props.searchBarID
+                { onSubmit: this.props.onSubmit, id: 'ribbon' },
+                React.createElement(
+                    'div',
+                    { id: 'ribbonContainer' },
+                    React.createElement(
+                        'div',
+                        { className: 'form-row' },
+                        React.createElement(
+                            'label',
+                            { htmlFor: this.props.labelFor },
+                            ' ',
+                            this.props.label,
+                            ' '
+                        )
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'form-row' },
+                        React.createElement(
+                            'div',
+                            { className: 'form-group col-10' },
+                            React.createElement(SearchBar
+                            //Ribbon states and props
+                            //  value= {this.state.value} //cannot havea value propand a default value prop specified.(ie controlled vs uncontrolled input)
+                            , { onChange: this.handleChange
 
-                }),
-                React.createElement(SubmitButton, null)
+                                //calling function props
+                                , type: this.props.type,
+                                searchBarClassName: this.props.searchBarClassName,
+                                id: this.props.searchBarID,
+                                placeholder: this.props.placeholder,
+                                defaultValue: this.props.defaultValue
+
+                            })
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'form-group col-2' },
+                            React.createElement(SubmitButton, {
+                                className: this.props.buttonClassName
+                            })
+                        )
+                    )
+                )
             );
         }
     }]);
@@ -574,35 +582,33 @@ var PlayerStats = function (_React$Component5) {
 }(React.Component);
 
 function SearchBar(props) {
-    return React.createElement(
-        'label',
-        null,
-        props.label,
-        React.createElement('input', {
-            type: props.type //"number"
-            // name={props.name}
-            , value: props.value,
-            onChange: props.onChange,
-            className: props.className //"form-control" 
-            , id: props.id //"RosterYear" 
-            , placeholder: props.placeholder //"Enter a Year" 
-            , defaultValue: props.defaultValue //"2020" 
-        })
-    );
+    return React.createElement('input', {
+        type: props.type //"number"
+        // name={props.name}
+        , value: props.value,
+        onChange: props.onChange,
+        className: props.searchBarClassName //"form-control" 
+        , id: props.id //"RosterYear" 
+        , placeholder: props.placeholder //"Enter a Year" 
+        , defaultValue: props.defaultValue //"2020"
+        , 'aria-describedby': props.discribedBy
+
+    });
 }
 
 function SubmitButton(props) {
     return (
-        /* <input
-             id ={props.id} //"btn" 
-             type={props.type} //"
-             className={props.className} //"btn btn-primary"
-             onClick={props.onClick}
-         > 
-             {props.caption} 
-         </input>
-         */
-        React.createElement('input', { type: 'submit', value: 'Submit' })
+        //<input type="submit" value="Submit" />
+        React.createElement(
+            'button',
+            {
+                type: 'submit',
+                'class': 'btn btn-primary mb-2',
+                id: 'btnOK'
+                //value='OK'
+            },
+            'OK'
+        )
     );
 }
 

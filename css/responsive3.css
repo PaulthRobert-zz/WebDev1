@@ -17,8 +17,19 @@
 }
 
 
-
 .row > *{
     padding-left: 0%;
     padding-right: 0%;
 }
+
+#ribbon{
+    background-color:#000080;
+    color:white;
+}
+
+#ribbonContainer{
+    margin-left:2.5%;
+    margin-right: 2.5%;
+    
+}
+

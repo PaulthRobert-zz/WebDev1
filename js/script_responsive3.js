@@ -53,7 +53,7 @@ class App extends React.Component{
     getTeams(){
         console.log('Submitteded!')
         let rosterYear = document.getElementById('RosterYear').value;                
-        fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27'+rosterYear+'%27')
+        fetch(`https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27${rosterYear}%27`)
             .then(prom =>prom.json())
             .then(data => {  
                 this.setState({
@@ -67,7 +67,7 @@ class App extends React.Component{
     getPlayers(teamID){
         let rosterYear = document.getElementById('RosterYear').value;
         console.log(rosterYear);
-        fetch('https://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%27'+2016+'%27&end_season=%27'+2016+'%27&team_id=%27'+teamID+'%27')
+        fetch(`https://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%27${rosterYear}%27&end_season=%27${rosterYear}%27&team_id=%27${teamID}%27`)
             .then(response => response.json())
             .then(data => {
                 this.setState({
@@ -128,16 +128,28 @@ class App extends React.Component{
         //ribbon here is a React Component
         ribbon=
         <Ribbon
+            //Search bar props
             onSubmit= {this.handleSubmit}
-            searchBarID='RosterYear'
+
+           // parentDivClassName='form-group'
+            labelFor='MLB Roster Year'            
             label= 'MLB Year'
+            type='number'
+            searchBarClassName='form-control'
+            searchBarID='RosterYear'
+            //placeholder=
+            defaultValue='2020'
+            
+
+            //Submit Button props
+            buttonClassName='btn btn-primary mb-2'
             />
 
         switch(drillDown){
             //TODO here you need to reference teamCard as a component
             case 'searchYear':
                 //TODO depricate this later
-                dataDisplay.push(<TeamCards name='Please Hold'/>)
+                dataDisplay.push(<div></div>)
 
             break;
             case 'selectTeam':
@@ -219,44 +231,6 @@ class App extends React.Component{
     }
 
 }
-/*
-class Ribbon extends React.Component{
-    constructor(props){
-        super(props);
-    }
-
-    render(){
-        return(
-                <form className="bg-dark">            
-                    <div className="form-row">  
-                        <div className="col">
-                            <SearchBar
-                                label= 'MLB Season'
-                                type="year" 
-                                className= "form-control"
-                                id="RosterYear"
-                                placeholder= "Enter a Year" 
-                                defaultValue= "2020" 
-                            />                                                                          
-                        </div>              
-                        <div className="col">
-                            <div className = "position-absolute mid-center">
-                                <SubmitButton
-                                    id ={this.props.id} //"btn" 
-                                    type={this.props.type} //"button"
-                                    className={this.props.className} //"btn btn-primary"
-                                    caption={this.props.caption} //"Go"
-                                    onClick={this.props.onClick} //DrillDownControl.handleSubmitButtonClick}    
-                                />
-                            </div>
-                            
-                        </div>                
-                    </div>
-                </form>
-        )
-    }
-}
-*/
 
 class Ribbon extends React.Component{
     constructor(props){
@@ -281,15 +255,41 @@ class Ribbon extends React.Component{
 
     render(){
         return(
-            <form onSubmit={this.props.onSubmit}>
-            <SearchBar
-                label= {this.props.label}
-                value= {this.state.value}
-                onChange= {this.handleChange}
-                id={this.props.searchBarID}
+            <form onSubmit={this.props.onSubmit} id='ribbon'>
+                <div id='ribbonContainer'>
+                <div className='form-row'>
+                    
                 
-               />
-            <SubmitButton />
+                    <label htmlFor={this.props.labelFor}> {this.props.label} </label>
+                </div>
+                <div className='form-row'>
+                    <div className='form-group col-10'>
+                    <SearchBar
+                        //Ribbon states and props
+                        //  value= {this.state.value} //cannot havea value propand a default value prop specified.(ie controlled vs uncontrolled input)
+                        onChange= {this.handleChange}
+                        
+                        //calling function props
+                        type={this.props.type}                        
+                        searchBarClassName={this.props.searchBarClassName}                      
+                        id={this.props.searchBarID}
+                        placeholder= {this.props.placeholder}
+                        defaultValue={this.props.defaultValue}
+                    
+                    />
+                    </div>
+                    <div className='form-group col-2'>
+                    <SubmitButton 
+                        className={this.props.buttonClassName}
+                        />
+                    </div>
+
+                
+                </div>
+           
+                    
+            </div>
+              
                
             </form>
         )}
@@ -394,34 +394,33 @@ class PlayerStats extends React.Component{
 }
 function SearchBar(props){
     return(
-            <label>
-                {props.label}
+
                 <input 
                     type={props.type} //"number"
                    // name={props.name}
                     value={props.value}
                     onChange={props.onChange} 
-                    className= {props.className} //"form-control" 
+                    className= {props.searchBarClassName} //"form-control" 
                     id= {props.id} //"RosterYear" 
                     placeholder= {props.placeholder} //"Enter a Year" 
-                    defaultValue= {props.defaultValue}         //"2020" 
+                    defaultValue= {props.defaultValue}         //"2020"
+                    aria-describedby= {props.discribedBy}
+
                 />
-            </label>    
+               
     )
 }
 
 function SubmitButton(props){
     return(
-       /* <input
-            id ={props.id} //"btn" 
-            type={props.type} //"
-            className={props.className} //"btn btn-primary"
-            onClick={props.onClick}
-        > 
-            {props.caption} 
-        </input>
-        */
-       <input type="submit" value="Submit" />
+       //<input type="submit" value="Submit" />
+        <button 
+                type='submit'
+                class='btn btn-primary mb-2'
+                id="btnOK"
+                //value='OK'
+            >OK
+            </button>
     )
 }
 
