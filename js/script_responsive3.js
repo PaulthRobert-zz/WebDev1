@@ -24,18 +24,15 @@ class App extends React.Component{
         this.state ={
             drillDown: 'searchYear',
             data: []}
-        this.handleSubmitButtonClick = this.handleSubmitButtonClick.bind(this);
         this.handleTeamClick = this.handleTeamClick.bind(this);
         this.handlePlayerClick = this.handlePlayerClick.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
         
         //states to move through the levels of drill down
             //searchYear
             //selectTeam
             //selectPlayer
             //viewPlayerStats
-    }
-    handleSubmitButtonClick(){
-        this.getTeams();
     }
 
     handleTeamClick(teamID){
@@ -47,7 +44,14 @@ class App extends React.Component{
         this.getPlayer(playerID);
     }
 
+    handleSubmit(event){
+        console.log('Submit handled');
+        this.getTeams();
+        event.preventDefault();
+    }
+
     getTeams(){
+        console.log('Submitteded!')
         let rosterYear = document.getElementById('RosterYear').value;                
         fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27'+rosterYear+'%27')
             .then(prom =>prom.json())
@@ -123,15 +127,11 @@ class App extends React.Component{
 
         //ribbon here is a React Component
         ribbon=
-            <div>
-                <Ribbon 
-                    id ="btn" 
-                    type="button"
-                    className="btn btn-primary"
-                    caption="Go"
-                    onClick={this.handleSubmitButtonClick} 
-                />
-            </div>
+        <Ribbon
+            onSubmit= {this.handleSubmit}
+            searchBarID='RosterYear'
+            label= 'MLB Year'
+            />
 
         switch(drillDown){
             //TODO here you need to reference teamCard as a component
@@ -219,7 +219,7 @@ class App extends React.Component{
     }
 
 }
-
+/*
 class Ribbon extends React.Component{
     constructor(props){
         super(props);
@@ -256,6 +256,45 @@ class Ribbon extends React.Component{
         )
     }
 }
+*/
+
+class Ribbon extends React.Component{
+    constructor(props){
+        super(props);
+        this.state={
+            value: ''
+        };
+        this.handleChange= this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleChange(event){
+        console.log('change handled');
+
+        this.setState({value: event.target.value});
+    }
+
+    handleSubmit = (event) => {
+        console.log('A value was submitted: '+ this.state.value);
+        event.preventDefault();
+    }
+
+    render(){
+        return(
+            <form onSubmit={this.props.onSubmit}>
+            <SearchBar
+                label= {this.props.label}
+                value= {this.state.value}
+                onChange= {this.handleChange}
+                id={this.props.searchBarID}
+                
+               />
+            <SubmitButton />
+               
+            </form>
+        )}
+}
+
 
 class TeamCards extends React.Component{
     constructor(props){
@@ -355,34 +394,35 @@ class PlayerStats extends React.Component{
 }
 function SearchBar(props){
     return(
-        <div className="form-group">
-            <label>{props.label}</label>
-            <input 
-                type={props.type} //"year" 
-                className= {props.className} //"form-control" 
-                id= {props.id} //"RosterYear" 
-                placeholder= {props.placeholder} //"Enter a Year" 
-                defaultValue= {props.defaultValue}         //"2020" 
-            /> 
-        </div>
+            <label>
+                {props.label}
+                <input 
+                    type={props.type} //"number"
+                   // name={props.name}
+                    value={props.value}
+                    onChange={props.onChange} 
+                    className= {props.className} //"form-control" 
+                    id= {props.id} //"RosterYear" 
+                    placeholder= {props.placeholder} //"Enter a Year" 
+                    defaultValue= {props.defaultValue}         //"2020" 
+                />
+            </label>    
     )
 }
 
 function SubmitButton(props){
     return(
-        <button 
+       /* <input
             id ={props.id} //"btn" 
-            type={props.type} //"button"
+            type={props.type} //"
             className={props.className} //"btn btn-primary"
             onClick={props.onClick}
         > 
             {props.caption} 
-        </button>
+        </input>
+        */
+       <input type="submit" value="Submit" />
     )
-}
-
-function teamGo(){
-    alert("Go!");
 }
 
 ReactDOM.render(

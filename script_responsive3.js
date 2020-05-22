@@ -37,9 +37,9 @@ var App = function (_React$Component) {
         _this.state = {
             drillDown: 'searchYear',
             data: [] };
-        _this.handleSubmitButtonClick = _this.handleSubmitButtonClick.bind(_this);
         _this.handleTeamClick = _this.handleTeamClick.bind(_this);
         _this.handlePlayerClick = _this.handlePlayerClick.bind(_this);
+        _this.handleSubmit = _this.handleSubmit.bind(_this);
 
         //states to move through the levels of drill down
         //searchYear
@@ -50,11 +50,6 @@ var App = function (_React$Component) {
     }
 
     _createClass(App, [{
-        key: 'handleSubmitButtonClick',
-        value: function handleSubmitButtonClick() {
-            this.getTeams();
-        }
-    }, {
         key: 'handleTeamClick',
         value: function handleTeamClick(teamID) {
             //alert('You clicked on the '+team);
@@ -66,10 +61,18 @@ var App = function (_React$Component) {
             this.getPlayer(playerID);
         }
     }, {
+        key: 'handleSubmit',
+        value: function handleSubmit(event) {
+            console.log('Submit handled');
+            this.getTeams();
+            event.preventDefault();
+        }
+    }, {
         key: 'getTeams',
         value: function getTeams() {
             var _this2 = this;
 
+            console.log('Submitteded!');
             var rosterYear = document.getElementById('RosterYear').value;
             fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27' + rosterYear + '%27').then(function (prom) {
                 return prom.json();
@@ -154,17 +157,11 @@ var App = function (_React$Component) {
             var dataDisplay = [];
 
             //ribbon here is a React Component
-            ribbon = React.createElement(
-                'div',
-                null,
-                React.createElement(Ribbon, {
-                    id: 'btn',
-                    type: 'button',
-                    className: 'btn btn-primary',
-                    caption: 'Go',
-                    onClick: this.handleSubmitButtonClick
-                })
-            );
+            ribbon = React.createElement(Ribbon, {
+                onSubmit: this.handleSubmit,
+                searchBarID: 'RosterYear',
+                label: 'MLB Year'
+            });
 
             switch (drillDown) {
                 //TODO here you need to reference teamCard as a component
@@ -255,6 +252,44 @@ var App = function (_React$Component) {
 
     return App;
 }(React.Component);
+/*
+class Ribbon extends React.Component{
+    constructor(props){
+        super(props);
+    }
+
+    render(){
+        return(
+                <form className="bg-dark">            
+                    <div className="form-row">  
+                        <div className="col">
+                            <SearchBar
+                                label= 'MLB Season'
+                                type="year" 
+                                className= "form-control"
+                                id="RosterYear"
+                                placeholder= "Enter a Year" 
+                                defaultValue= "2020" 
+                            />                                                                          
+                        </div>              
+                        <div className="col">
+                            <div className = "position-absolute mid-center">
+                                <SubmitButton
+                                    id ={this.props.id} //"btn" 
+                                    type={this.props.type} //"button"
+                                    className={this.props.className} //"btn btn-primary"
+                                    caption={this.props.caption} //"Go"
+                                    onClick={this.props.onClick} //DrillDownControl.handleSubmitButtonClick}    
+                                />
+                            </div>
+                            
+                        </div>                
+                    </div>
+                </form>
+        )
+    }
+}
+*/
 
 var Ribbon = function (_React$Component2) {
     _inherits(Ribbon, _React$Component2);
@@ -262,46 +297,42 @@ var Ribbon = function (_React$Component2) {
     function Ribbon(props) {
         _classCallCheck(this, Ribbon);
 
-        return _possibleConstructorReturn(this, (Ribbon.__proto__ || Object.getPrototypeOf(Ribbon)).call(this, props));
+        var _this6 = _possibleConstructorReturn(this, (Ribbon.__proto__ || Object.getPrototypeOf(Ribbon)).call(this, props));
+
+        _this6.handleSubmit = function (event) {
+            console.log('A value was submitted: ' + _this6.state.value);
+            event.preventDefault();
+        };
+
+        _this6.state = {
+            value: ''
+        };
+        _this6.handleChange = _this6.handleChange.bind(_this6);
+        _this6.handleSubmit = _this6.handleSubmit.bind(_this6);
+        return _this6;
     }
 
     _createClass(Ribbon, [{
+        key: 'handleChange',
+        value: function handleChange(event) {
+            console.log('change handled');
+
+            this.setState({ value: event.target.value });
+        }
+    }, {
         key: 'render',
         value: function render() {
             return React.createElement(
                 'form',
-                { className: 'bg-dark' },
-                React.createElement(
-                    'div',
-                    { className: 'form-row' },
-                    React.createElement(
-                        'div',
-                        { className: 'col' },
-                        React.createElement(SearchBar, {
-                            label: 'MLB Season',
-                            type: 'year',
-                            className: 'form-control',
-                            id: 'RosterYear',
-                            placeholder: 'Enter a Year',
-                            defaultValue: '2020'
-                        })
-                    ),
-                    React.createElement(
-                        'div',
-                        { className: 'col' },
-                        React.createElement(
-                            'div',
-                            { className: 'position-absolute mid-center' },
-                            React.createElement(SubmitButton, {
-                                id: this.props.id //"btn" 
-                                , type: this.props.type //"button"
-                                , className: this.props.className //"btn btn-primary"
-                                , caption: this.props.caption //"Go"
-                                , onClick: this.props.onClick //DrillDownControl.handleSubmitButtonClick}    
-                            })
-                        )
-                    )
-                )
+                { onSubmit: this.props.onSubmit },
+                React.createElement(SearchBar, {
+                    label: this.props.label,
+                    value: this.state.value,
+                    onChange: this.handleChange,
+                    id: this.props.searchBarID
+
+                }),
+                React.createElement(SubmitButton, null)
             );
         }
     }]);
@@ -544,16 +575,15 @@ var PlayerStats = function (_React$Component5) {
 
 function SearchBar(props) {
     return React.createElement(
-        'div',
-        { className: 'form-group' },
-        React.createElement(
-            'label',
-            null,
-            props.label
-        ),
+        'label',
+        null,
+        props.label,
         React.createElement('input', {
-            type: props.type //"year" 
-            , className: props.className //"form-control" 
+            type: props.type //"number"
+            // name={props.name}
+            , value: props.value,
+            onChange: props.onChange,
+            className: props.className //"form-control" 
             , id: props.id //"RosterYear" 
             , placeholder: props.placeholder //"Enter a Year" 
             , defaultValue: props.defaultValue //"2020" 
@@ -562,20 +592,18 @@ function SearchBar(props) {
 }
 
 function SubmitButton(props) {
-    return React.createElement(
-        'button',
-        {
-            id: props.id //"btn" 
-            , type: props.type //"button"
-            , className: props.className //"btn btn-primary"
-            , onClick: props.onClick
-        },
-        props.caption
+    return (
+        /* <input
+             id ={props.id} //"btn" 
+             type={props.type} //"
+             className={props.className} //"btn btn-primary"
+             onClick={props.onClick}
+         > 
+             {props.caption} 
+         </input>
+         */
+        React.createElement('input', { type: 'submit', value: 'Submit' })
     );
-}
-
-function teamGo() {
-    alert("Go!");
 }
 
 ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
