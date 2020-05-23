@@ -36,7 +36,6 @@ class App extends React.Component{
     }
 
     handleTeamClick(teamID){
-        //alert('You clicked on the '+team);
         this.getPlayers(teamID)
     }
 
@@ -45,7 +44,6 @@ class App extends React.Component{
     }
 
     handleSubmit(event){
-        console.log('Submit handled');
         this.getTeams();
         event.preventDefault();
     }
@@ -66,14 +64,14 @@ class App extends React.Component{
 
     getPlayers(teamID){
         let rosterYear = document.getElementById('RosterYear').value;
-        console.log(rosterYear);
-        fetch(`https://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%27${rosterYear}%27&end_season=%27${rosterYear}%27&team_id=%27${teamID}%27`)
+        fetch(`https://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%27${rosterYear-1}%27&end_season=%27${rosterYear}%27&team_id=%27${teamID}%27`)
             .then(response => response.json())
             .then(data => {
                 this.setState({
                     drillDown: 'selectPlayer',
                     data: data.roster_team_alltime.queryResults.row
                 })
+                console.log('data: '+data);
             })
             .catch(err => console.log('Error: '+err));
     }
@@ -114,9 +112,7 @@ class App extends React.Component{
                             data: data.player_info.queryResults.row
                         })
                 })
-                .catch(err=> console.log(err));
-                        
-
+                .catch(err=> console.log(err));                        
     }
 
     render(){
@@ -134,7 +130,7 @@ class App extends React.Component{
            // parentDivClassName='form-group'
             labelFor='MLB Roster Year'            
             label= 'MLB Year'
-            type='number'
+            searchBartype='number'
             searchBarClassName='form-control'
             searchBarID='RosterYear'
             //placeholder=
@@ -176,7 +172,9 @@ class App extends React.Component{
                 })
             break;
             case 'selectPlayer':
+                
                 dataDisplay = data.map((playerData)=>{
+                    console.log('player data: '+playerData);
                     const{
                         name_first_last,
                         throws,
@@ -270,7 +268,7 @@ class Ribbon extends React.Component{
                         onChange= {this.handleChange}
                         
                         //calling function props
-                        type={this.props.type}                        
+                        searchBartype={this.props.searchBartype}                        
                         searchBarClassName={this.props.searchBarClassName}                      
                         id={this.props.searchBarID}
                         placeholder= {this.props.placeholder}
@@ -302,8 +300,8 @@ class TeamCards extends React.Component{
     }
     render() {
         return(
-            <div className="card bg-dark" onClick={this.props.onClick}>    
-                <div className="card-body bg-light team-card">    
+            <div className="card mb-1 team-card" onClick={this.props.onClick}>    
+                <div className="card-body">    
                     <div className="row">
                         <div className="col-4">
                             <p className="card-text text-body name">{this.props.name}</p>
@@ -333,8 +331,8 @@ class PlayerCards extends React.Component{
     }
     render() {
         return(
-            <div className="card bg-dark" onClick={this.props.onClick}>    
-                <div className="card-body bg-light team-card">    
+            <div className="card" onClick={this.props.onClick}>    
+                <div className="card-body">    
                     <div className="row">
                         <div className="col-5">
                             <p className="card-text text-body">{this.props.playerName}</p>
@@ -396,7 +394,7 @@ function SearchBar(props){
     return(
 
                 <input 
-                    type={props.type} //"number"
+                    type={props.searchBartype} //"number"
                    // name={props.name}
                     value={props.value}
                     onChange={props.onChange} 
@@ -413,10 +411,12 @@ function SearchBar(props){
 
 function SubmitButton(props){
     return(
+        //TODO - pass these down from ribbon and from app
+
        //<input type="submit" value="Submit" />
         <button 
                 type='submit'
-                class='btn btn-primary mb-2'
+                className='btn btn-primary mb-2'
                 id="btnOK"
                 //value='OK'
             >OK

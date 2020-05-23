@@ -8,15 +8,6 @@
     text-align: right;
 }
 
-.bg-dark{
-    color: white;
-}
-
-.card-body{
-    padding-bottom: 0%;
-}
-
-
 .row > *{
     padding-left: 0%;
     padding-right: 0%;
@@ -32,4 +23,3 @@
     margin-right: 2.5%;
     
 }
-

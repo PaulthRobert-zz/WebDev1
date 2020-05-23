@@ -52,7 +52,6 @@ var App = function (_React$Component) {
     _createClass(App, [{
         key: 'handleTeamClick',
         value: function handleTeamClick(teamID) {
-            //alert('You clicked on the '+team);
             this.getPlayers(teamID);
         }
     }, {
@@ -63,7 +62,6 @@ var App = function (_React$Component) {
     }, {
         key: 'handleSubmit',
         value: function handleSubmit(event) {
-            console.log('Submit handled');
             this.getTeams();
             event.preventDefault();
         }
@@ -91,14 +89,14 @@ var App = function (_React$Component) {
             var _this3 = this;
 
             var rosterYear = document.getElementById('RosterYear').value;
-            console.log(rosterYear);
-            fetch('https://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%27' + rosterYear + '%27&end_season=%27' + rosterYear + '%27&team_id=%27' + teamID + '%27').then(function (response) {
+            fetch('https://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%27' + (rosterYear - 1) + '%27&end_season=%27' + rosterYear + '%27&team_id=%27' + teamID + '%27').then(function (response) {
                 return response.json();
             }).then(function (data) {
                 _this3.setState({
                     drillDown: 'selectPlayer',
                     data: data.roster_team_alltime.queryResults.row
                 });
+                console.log('data: ' + data);
             }).catch(function (err) {
                 return console.log('Error: ' + err);
             });
@@ -164,7 +162,7 @@ var App = function (_React$Component) {
                 // parentDivClassName='form-group'
                 , labelFor: 'MLB Roster Year',
                 label: 'MLB Year',
-                type: 'number',
+                searchBartype: 'number',
                 searchBarClassName: 'form-control',
                 searchBarID: 'RosterYear'
                 //placeholder=
@@ -206,7 +204,9 @@ var App = function (_React$Component) {
                     });
                     break;
                 case 'selectPlayer':
+
                     dataDisplay = data.map(function (playerData) {
+                        console.log('player data: ' + playerData);
                         var name_first_last = playerData.name_first_last,
                             throws = playerData.throws,
                             bats = playerData.bats,
@@ -324,7 +324,7 @@ var Ribbon = function (_React$Component2) {
                             , { onChange: this.handleChange
 
                                 //calling function props
-                                , type: this.props.type,
+                                , searchBartype: this.props.searchBartype,
                                 searchBarClassName: this.props.searchBarClassName,
                                 id: this.props.searchBarID,
                                 placeholder: this.props.placeholder,
@@ -362,10 +362,10 @@ var TeamCards = function (_React$Component3) {
         value: function render() {
             return React.createElement(
                 'div',
-                { className: 'card bg-dark', onClick: this.props.onClick },
+                { className: 'card mb-1 team-card', onClick: this.props.onClick },
                 React.createElement(
                     'div',
-                    { className: 'card-body bg-light team-card' },
+                    { className: 'card-body' },
                     React.createElement(
                         'div',
                         { className: 'row' },
@@ -432,10 +432,10 @@ var PlayerCards = function (_React$Component4) {
         value: function render() {
             return React.createElement(
                 'div',
-                { className: 'card bg-dark', onClick: this.props.onClick },
+                { className: 'card', onClick: this.props.onClick },
                 React.createElement(
                     'div',
-                    { className: 'card-body bg-light team-card' },
+                    { className: 'card-body' },
                     React.createElement(
                         'div',
                         { className: 'row' },
@@ -583,7 +583,7 @@ var PlayerStats = function (_React$Component5) {
 
 function SearchBar(props) {
     return React.createElement('input', {
-        type: props.type //"number"
+        type: props.searchBartype //"number"
         // name={props.name}
         , value: props.value,
         onChange: props.onChange,
@@ -598,12 +598,14 @@ function SearchBar(props) {
 
 function SubmitButton(props) {
     return (
+        //TODO - pass these down from ribbon and from app
+
         //<input type="submit" value="Submit" />
         React.createElement(
             'button',
             {
                 type: 'submit',
-                'class': 'btn btn-primary mb-2',
+                className: 'btn btn-primary mb-2',
                 id: 'btnOK'
                 //value='OK'
             },
