@@ -2,6 +2,13 @@
 // js.react
 // babel > jsx
 
+/* spining up your dev machine
+    - run babel 
+        npx babel --watch js --out-dir . --presets react-app/prod
+    - run browsersync
+
+    
+
 /* Things TODO
     - add a back button
     - add sort by 
@@ -11,6 +18,13 @@
     - add filter by
         position type
         primary position
+
+    - at the player level it would be nice to be able to drill down into a stat group and see how they compare to 
+        division
+        league
+        overall
+
+        for that stat group
 
     - look into using these premade react components https://material-ui.com/components/badges/
 
@@ -23,7 +37,9 @@ class App extends React.Component{
         super(props);
         this.state ={
             drillDown: 'searchYear',
-            data: []}
+            data: [],
+            seasonPitcingData: []
+        }
         this.handleTeamClick = this.handleTeamClick.bind(this);
         this.handlePlayerClick = this.handlePlayerClick.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -49,7 +65,6 @@ class App extends React.Component{
     }
 
     getTeams(){
-        console.log('Submitteded!')
         let rosterYear = document.getElementById('RosterYear').value;                
         fetch(`https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27${rosterYear}%27`)
             .then(prom =>prom.json())
@@ -71,26 +86,64 @@ class App extends React.Component{
                     drillDown: 'selectPlayer',
                     data: data.roster_team_alltime.queryResults.row
                 })
-                console.log('data: '+data);
             })
             .catch(err => console.log('Error: '+err));
     }
 
     getPlayer(playerID){
-        console.log('playerid: '+playerID);
-
         let rosterYear = document.getElementById('RosterYear').value;
+
+        //Sample PlayerID --> Madison Bumgarner: 518516
 
         //TODO - rewrite these as `https://${variable}`
         //fetches
             //player info          http://lookup-service-prod.mlb.com/json/named.player_info.bam?sport_code=%27mlb%27&player_id=%27493316%27
             const playerInfoAPI = `https://lookup-service-prod.mlb.com/json/named.player_info.bam?sport_code=%27mlb%27&player_id=%27${playerID}%27`
+                /*
+                    name_nick
+                    primary_stat_type
+                    status
+
+                */
             
             //season hitting http://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27493316%27
-            const seasonHittingAPI = `https://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27'${rosterYear}%27&player_id=%${playerID}%27`
+            const seasonHittingAPI = `https://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27${rosterYear}%27&player_id=%27${playerID}%27`
             
-            //season pitching http://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27592789%27
-            const seasonPitchingAPI = `https://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27${rosterYear}%27&player_id=%${playerID}%27`
+            //season pitching 
+            const seasonPitchingAPI = `https://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27${rosterYear}%27&player_id=%27${playerID}%27`
+            //Sample PlayerID --> Madison Bumgarner: 518516
+            /*
+                
+               g  - Games
+               gs - Games Started
+               qs -  Quality Starts
+               bqs - Blown Quality Starts
+               ip - Innings Pitched
+                
+                Total Batters
+               so - Strike Outs
+               bb - Base on Balls 
+               np - Total Pitches
+               hb - hit batters
+
+               h   - Hits
+               db  - Doubles
+                Tripples
+               hr   - Home Runs
+               gs   - Grand Slams
+               r    - Runs
+               er   - Earned Runs
+               gidp - GIDP (ground into douple play)
+
+
+                bb9 - BB/9
+                k9 - k/9 strikes ber inning 
+                kbb - strike to walk ratio
+                rs9 - rs/9
+                h9  - H/9
+                hr9 - HR/9
+            */
+
             
             //career hitting 'http://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%'+playerID+'%27'
             const careerHittingAPI = `https://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%${playerID}%27`
@@ -104,6 +157,8 @@ class App extends React.Component{
             //projected pitching https://appac.github.io/mlb-data-api-docs/#stats-data-projected-pitching-stats-get
             const projectedPitchingAPI =`https://lookup-service-prod.mlb.com/json/named.proj_pecota_pitching.bam?season=%27${rosterYear}%27&player_id=%27'${playerID}%27`
             
+
+            
             fetch(playerInfoAPI)
                 .then(response => response.json())
                 .then(data => {
@@ -112,12 +167,22 @@ class App extends React.Component{
                             data: data.player_info.queryResults.row
                         })
                 })
-                .catch(err=> console.log(err));                        
-    }
+                .then(         fetch(seasonPitchingAPI)
+                .then(response=> response.json())
+                .then(data => {
+                    this.setState({
+                        seasonPitchingData: data.sport_pitching_tm.queryResults.row
+                    })
+                }))                
+                .catch(err=> console.log(err));
+               
 
+    }
+    
     render(){
         const drillDown= this.state.drillDown;
         const data = this.state.data;
+        const seasonPitchingData = this.state.seasonPitchingData;
         let ribbon;
         let dataDisplay = [];
 
@@ -134,7 +199,7 @@ class App extends React.Component{
             searchBarClassName='form-control'
             searchBarID='RosterYear'
             //placeholder=
-            defaultValue='2020'
+            defaultValue='2018'
             
 
             //Submit Button props
@@ -171,10 +236,8 @@ class App extends React.Component{
                     )
                 })
             break;
-            case 'selectPlayer':
-                
+            case 'selectPlayer':      
                 dataDisplay = data.map((playerData)=>{
-                    console.log('player data: '+playerData);
                     const{
                         name_first_last,
                         throws,
@@ -187,7 +250,6 @@ class App extends React.Component{
                         birth_date,
                         jersey_number
                     }=playerData;
-
                     return(
                         <PlayerCards
                             playerName={name_first_last}
@@ -201,20 +263,24 @@ class App extends React.Component{
                     )
                 })
                 break;
-                case 'playerStats':
-                    
-                const inches = data['height_in'];
-
-                if(inches == null){console.log('null')};
+                case 'playerStats':    
+                const inches = data['height_in']           
 
                 dataDisplay=                         
                     <PlayerStats
                         name= {data['name_display_first_last']}
                         age={data['age']}
                         ft={data['height_feet']}
-                        in={data['height_inches']}
+                        in={inches}
                         weight={data['weight']}
                         jerseyNumber={data['jersey_number']}
+                       // games={seasonPitchingData['g']}
+                        gamesStarted={seasonPitchingData['gs']}
+                        qualityStarts={seasonPitchingData['qs']}
+                        blownQualityStarts={seasonPitchingData['bqs']}
+                        inningsPitched={seasonPitchingData['ip']}
+                
+                    
                     />
                         
                 break;
@@ -329,6 +395,7 @@ class PlayerCards extends React.Component{
     constructor(props){
         super(props);     
     }
+
     render() {
         return(
             <div className="card" onClick={this.props.onClick}>    
@@ -383,6 +450,46 @@ class PlayerStats extends React.Component{
                         </div>
                         <div className="col-2">
                             <p className="card-text text-body cust-card-text-right">#{this.props.jerseyNumber}</p>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-2">
+                            <p className="card-text text-body">Games</p>
+                        </div>
+                        <div className="col-2">
+                            <p className="card-text text-body">GamesStarted</p>
+                        </div>
+                        <div className="col-2">
+                            <p className="card-text text-body cust-card-text-right">QualityStarts"</p>
+                        </div>
+                        <div className="col-2">
+                            <p className="card-text text-body cust-card-text-right">BlownQualityStarts</p>
+                        </div>
+                        <div className="col-2">
+                            <p className="card-text text-body cust-card-text-right">InningsPitched</p>
+                        </div>
+                        <div className="col-2">
+                            <p className="card-text text-body cust-card-text-right">{}</p>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-2">
+                            <p className="card-text text-body">{this.props.games}</p>
+                        </div>
+                        <div className="col-2">
+                            <p className="card-text text-body">{this.props.gamesStarted}</p>
+                        </div>
+                        <div className="col-2">
+                            <p className="card-text text-body cust-card-text-right">{this.props.qualityStarts}</p>
+                        </div>
+                        <div className="col-2">
+                            <p className="card-text text-body cust-card-text-right">{this.props.blownQualityStarts}</p>
+                        </div>
+                        <div className="col-2">
+                            <p className="card-text text-body cust-card-text-right">{this.props.inningsPitched}</p>
+                        </div>
+                        <div className="col-2">
+                            <p className="card-text text-body cust-card-text-right">{}</p>
                         </div>
                     </div>
                 </div>

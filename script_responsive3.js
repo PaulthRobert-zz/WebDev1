@@ -10,6 +10,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 // js.react
 // babel > jsx
 
+/* spining up your dev machine
+    - run babel 
+        npx babel --watch js --out-dir . --presets react-app/prod
+    - run browsersync
+
+    
+
 /* Things TODO
     - add a back button
     - add sort by 
@@ -19,6 +26,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     - add filter by
         position type
         primary position
+
+    - at the player level it would be nice to be able to drill down into a stat group and see how they compare to 
+        division
+        league
+        overall
+
+        for that stat group
 
     - look into using these premade react components https://material-ui.com/components/badges/
 
@@ -36,7 +50,9 @@ var App = function (_React$Component) {
 
         _this.state = {
             drillDown: 'searchYear',
-            data: [] };
+            data: [],
+            seasonPitcingData: []
+        };
         _this.handleTeamClick = _this.handleTeamClick.bind(_this);
         _this.handlePlayerClick = _this.handlePlayerClick.bind(_this);
         _this.handleSubmit = _this.handleSubmit.bind(_this);
@@ -70,7 +86,6 @@ var App = function (_React$Component) {
         value: function getTeams() {
             var _this2 = this;
 
-            console.log('Submitteded!');
             var rosterYear = document.getElementById('RosterYear').value;
             fetch('https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27' + rosterYear + '%27').then(function (prom) {
                 return prom.json();
@@ -96,7 +111,6 @@ var App = function (_React$Component) {
                     drillDown: 'selectPlayer',
                     data: data.roster_team_alltime.queryResults.row
                 });
-                console.log('data: ' + data);
             }).catch(function (err) {
                 return console.log('Error: ' + err);
             });
@@ -106,20 +120,54 @@ var App = function (_React$Component) {
         value: function getPlayer(playerID) {
             var _this4 = this;
 
-            console.log('playerid: ' + playerID);
-
             var rosterYear = document.getElementById('RosterYear').value;
+
+            //Sample PlayerID --> Madison Bumgarner: 518516
 
             //TODO - rewrite these as `https://${variable}`
             //fetches
             //player info          http://lookup-service-prod.mlb.com/json/named.player_info.bam?sport_code=%27mlb%27&player_id=%27493316%27
             var playerInfoAPI = 'https://lookup-service-prod.mlb.com/json/named.player_info.bam?sport_code=%27mlb%27&player_id=%27' + playerID + '%27';
+            /*
+                name_nick
+                primary_stat_type
+                status
+              */
 
             //season hitting http://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27493316%27
-            var seasonHittingAPI = 'https://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27\'' + rosterYear + '%27&player_id=%' + playerID + '%27';
+            var seasonHittingAPI = 'https://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
 
-            //season pitching http://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27592789%27
-            var seasonPitchingAPI = 'https://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27' + rosterYear + '%27&player_id=%' + playerID + '%27';
+            //season pitching 
+            var seasonPitchingAPI = 'https://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
+            //Sample PlayerID --> Madison Bumgarner: 518516
+            /*
+                
+               g  - Games
+               gs - Games Started
+               qs -  Quality Starts
+               bqs - Blown Quality Starts
+               ip - Innings Pitched
+                
+                Total Batters
+               so - Strike Outs
+               bb - Base on Balls 
+               np - Total Pitches
+               hb - hit batters
+                 h   - Hits
+               db  - Doubles
+                Tripples
+               hr   - Home Runs
+               gs   - Grand Slams
+               r    - Runs
+               er   - Earned Runs
+               gidp - GIDP (ground into douple play)
+                    bb9 - BB/9
+                k9 - k/9 strikes ber inning 
+                kbb - strike to walk ratio
+                rs9 - rs/9
+                h9  - H/9
+                hr9 - HR/9
+            */
 
             //career hitting 'http://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%'+playerID+'%27'
             var careerHittingAPI = 'https://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%' + playerID + '%27';
@@ -140,7 +188,13 @@ var App = function (_React$Component) {
                     drillDown: 'playerStats',
                     data: data.player_info.queryResults.row
                 });
-            }).catch(function (err) {
+            }).then(fetch(seasonPitchingAPI).then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                _this4.setState({
+                    seasonPitchingData: data.sport_pitching_tm.queryResults.row
+                });
+            })).catch(function (err) {
                 return console.log(err);
             });
         }
@@ -151,6 +205,7 @@ var App = function (_React$Component) {
 
             var drillDown = this.state.drillDown;
             var data = this.state.data;
+            var seasonPitchingData = this.state.seasonPitchingData;
             var ribbon = void 0;
             var dataDisplay = [];
 
@@ -166,7 +221,7 @@ var App = function (_React$Component) {
                 searchBarClassName: 'form-control',
                 searchBarID: 'RosterYear'
                 //placeholder=
-                , defaultValue: '2020'
+                , defaultValue: '2018'
 
                 //Submit Button props
                 , buttonClassName: 'btn btn-primary mb-2'
@@ -204,9 +259,7 @@ var App = function (_React$Component) {
                     });
                     break;
                 case 'selectPlayer':
-
                     dataDisplay = data.map(function (playerData) {
-                        console.log('player data: ' + playerData);
                         var name_first_last = playerData.name_first_last,
                             throws = playerData.throws,
                             bats = playerData.bats,
@@ -217,7 +270,6 @@ var App = function (_React$Component) {
                             primary_position = playerData.primary_position,
                             birth_date = playerData.birth_date,
                             jersey_number = playerData.jersey_number;
-
 
                         return React.createElement(PlayerCards, {
                             playerName: name_first_last,
@@ -233,20 +285,21 @@ var App = function (_React$Component) {
                     });
                     break;
                 case 'playerStats':
-
                     var inches = data['height_in'];
-
-                    if (inches == null) {
-                        console.log('null');
-                    };
 
                     dataDisplay = React.createElement(PlayerStats, {
                         name: data['name_display_first_last'],
                         age: data['age'],
                         ft: data['height_feet'],
-                        'in': data['height_inches'],
+                        'in': inches,
                         weight: data['weight'],
                         jerseyNumber: data['jersey_number']
+                        // games={seasonPitchingData['g']}
+                        , gamesStarted: seasonPitchingData['gs'],
+                        qualityStarts: seasonPitchingData['qs'],
+                        blownQualityStarts: seasonPitchingData['bqs'],
+                        inningsPitched: seasonPitchingData['ip']
+
                     });
 
                     break;
@@ -571,6 +624,114 @@ var PlayerStats = function (_React$Component5) {
                                 '#',
                                 this.props.jerseyNumber
                             )
+                        )
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'row' },
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body' },
+                                'Games'
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body' },
+                                'GamesStarted'
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body cust-card-text-right' },
+                                'QualityStarts"'
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body cust-card-text-right' },
+                                'BlownQualityStarts'
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body cust-card-text-right' },
+                                'InningsPitched'
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-right' })
+                        )
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'row' },
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body' },
+                                this.props.games
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body' },
+                                this.props.gamesStarted
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body cust-card-text-right' },
+                                this.props.qualityStarts
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body cust-card-text-right' },
+                                this.props.blownQualityStarts
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body cust-card-text-right' },
+                                this.props.inningsPitched
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-2' },
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-right' })
                         )
                     )
                 )
