@@ -8,6 +8,10 @@
     text-align: right;
 }
 
+.cust-card-text-small{
+    font-size: x-small;
+}
+
 .row > *{
     padding-left: 0%;
     padding-right: 0%;

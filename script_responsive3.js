@@ -10,11 +10,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 // js.react
 // babel > jsx
 
-/* spining up your dev machine
+/* spining up your dev machine - from the project root directory in comandline
     - run babel 
         npx babel --watch js --out-dir . --presets react-app/prod
     - run browsersync
-
+        browser-sync start  --server --files * --index pages/responsive3.html
     
 
 /* Things TODO
@@ -135,10 +135,10 @@ var App = function (_React$Component) {
               */
 
             //season hitting http://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27493316%27
-            var seasonHittingAPI = 'https://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
+            var seasonHittingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
 
             //season pitching 
-            var seasonPitchingAPI = 'https://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
+            var seasonPitchingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
             //Sample PlayerID --> Madison Bumgarner: 518516
             /*
                 
@@ -170,33 +170,64 @@ var App = function (_React$Component) {
             */
 
             //career hitting 'http://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%'+playerID+'%27'
-            var careerHittingAPI = 'https://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%' + playerID + '%27';
+            var careerHittingAPI = 'https://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%27' + playerID + '%27';
 
             //career pitching  http://lookup-service-prod.mlb.com/json/named.sport_career_pitching.bam?league_list_id='mlb'&game_type='R'&player_id='592789'
-            var careerPitchingAPI = 'https://lookup-service-prod.mlb.com/json/named.sport_career_pitching.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%' + playerID + '%27';
+            var careerPitchingAPI = 'https://lookup-service-prod.mlb.com/json/named.sport_career_pitching.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%27' + playerID + '%27';
 
             //projected hitting https://appac.github.io/mlb-data-api-docs/#stats-data-projected-hitting-stats-get
-            var projectedHittingAPI = 'https://appac.github.io/mlb-data-api-docs/#stats-data-projected-hitting-stats-get';
+            var projectedHittingAPI = 'http://lookup-service-prod.mlb.com/json/named.proj_pecota_batting.bam?season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
 
             //projected pitching https://appac.github.io/mlb-data-api-docs/#stats-data-projected-pitching-stats-get
-            var projectedPitchingAPI = 'https://lookup-service-prod.mlb.com/json/named.proj_pecota_pitching.bam?season=%27' + rosterYear + '%27&player_id=%27\'' + playerID + '%27';
+            var projectedPitchingAPI = 'https://lookup-service-prod.mlb.com/json/named.proj_pecota_pitching.bam?season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
 
-            fetch(playerInfoAPI).then(function (response) {
-                return response.json();
-            }).then(function (data) {
-                _this4.setState({
-                    drillDown: 'playerStats',
-                    data: data.player_info.queryResults.row
-                });
-            }).then(fetch(seasonPitchingAPI).then(function (response) {
-                return response.json();
-            }).then(function (data) {
-                _this4.setState({
-                    seasonPitchingData: data.sport_pitching_tm.queryResults.row
-                });
-            })).catch(function (err) {
-                return console.log(err);
+            /* This works
+            fetch(playerInfoAPI)
+                .then(response => response.json())
+                .then(data => {
+                        this.setState({
+                            drillDown: 'playerStats',
+                            data: data.player_info.queryResults.row
+                        })
+                })
+            */
+            /*******************************************************************************************/
+            var urls = [playerInfoAPI, seasonHittingAPI, seasonPitchingAPI, careerHittingAPI, careerPitchingAPI, projectedHittingAPI, projectedPitchingAPI];
+
+            var requests = urls.map(function (url) {
+                return fetch(url);
             });
+
+            //trying promises.all
+            Promise.all(requests).then(function (responses) {
+                responses.forEach(function (response) {
+                    process(response.json());
+                });
+                //responses[0].json()
+                //responses[1].json()
+            }).catch();
+
+            var process = function process(promise) {
+                promise.then(function (data) {
+                    _this4.setState({
+                        drillDown: 'playerStats'
+                        //data: data.player_info.queryResults.row
+
+                    });
+                    console.log(data);
+                });
+            };
+
+            /*******************************************************************************************/
+
+            //              .then(         fetch(seasonPitchingAPI)
+            //              .then(response=> response.json())
+            //              .then(data => {
+            //                  this.setState({
+            //                      seasonPitchingData: data.sport_pitching_tm.queryResults.row
+            //                  })
+            //              }))                
+            //              .catch(err=> console.log(err));
         }
     }, {
         key: 'render',
@@ -294,11 +325,11 @@ var App = function (_React$Component) {
                         'in': inches,
                         weight: data['weight'],
                         jerseyNumber: data['jersey_number']
-                        // games={seasonPitchingData['g']}
-                        , gamesStarted: seasonPitchingData['gs'],
-                        qualityStarts: seasonPitchingData['qs'],
-                        blownQualityStarts: seasonPitchingData['bqs'],
-                        inningsPitched: seasonPitchingData['ip']
+                        //                      games={seasonPitchingData['g']}
+                        //                      gamesStarted={seasonPitchingData['gs']}
+                        //                      qualityStarts={seasonPitchingData['qs']}
+                        //                      blownQualityStarts={seasonPitchingData['bqs']}
+                        //                      inningsPitched={seasonPitchingData['ip']}
 
                     });
 
@@ -634,7 +665,7 @@ var PlayerStats = function (_React$Component5) {
                             { className: 'col-2' },
                             React.createElement(
                                 'p',
-                                { className: 'card-text text-body' },
+                                { className: 'card-text text-body cust-card-text-small' },
                                 'Games'
                             )
                         ),
@@ -643,7 +674,7 @@ var PlayerStats = function (_React$Component5) {
                             { className: 'col-2' },
                             React.createElement(
                                 'p',
-                                { className: 'card-text text-body' },
+                                { className: 'card-text text-body cust-card-text-small' },
                                 'GamesStarted'
                             )
                         ),
@@ -652,7 +683,7 @@ var PlayerStats = function (_React$Component5) {
                             { className: 'col-2' },
                             React.createElement(
                                 'p',
-                                { className: 'card-text text-body cust-card-text-right' },
+                                { className: 'card-text text-body cust-card-text-right cust-card-text-small' },
                                 'QualityStarts"'
                             )
                         ),
@@ -661,7 +692,7 @@ var PlayerStats = function (_React$Component5) {
                             { className: 'col-2' },
                             React.createElement(
                                 'p',
-                                { className: 'card-text text-body cust-card-text-right' },
+                                { className: 'card-text text-body cust-card-text-right cust-card-text-small' },
                                 'BlownQualityStarts'
                             )
                         ),
@@ -670,14 +701,14 @@ var PlayerStats = function (_React$Component5) {
                             { className: 'col-2' },
                             React.createElement(
                                 'p',
-                                { className: 'card-text text-body cust-card-text-right' },
+                                { className: 'card-text text-body cust-card-text-right cust-card-text-small' },
                                 'InningsPitched'
                             )
                         ),
                         React.createElement(
                             'div',
                             { className: 'col-2' },
-                            React.createElement('p', { className: 'card-text text-body cust-card-text-right' })
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-right cust-card-text-small' })
                         )
                     ),
                     React.createElement(

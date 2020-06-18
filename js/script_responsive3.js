@@ -2,11 +2,11 @@
 // js.react
 // babel > jsx
 
-/* spining up your dev machine
+/* spining up your dev machine - from the project root directory in comandline
     - run babel 
         npx babel --watch js --out-dir . --presets react-app/prod
     - run browsersync
-
+        browser-sync start  --server --files * --index pages/responsive3.html
     
 
 /* Things TODO
@@ -107,10 +107,10 @@ class App extends React.Component{
                 */
             
             //season hitting http://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27493316%27
-            const seasonHittingAPI = `https://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27${rosterYear}%27&player_id=%27${playerID}%27`
+            const seasonHittingAPI = `http://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27${rosterYear}%27&player_id=%27${playerID}%27`
             
             //season pitching 
-            const seasonPitchingAPI = `https://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27${rosterYear}%27&player_id=%27${playerID}%27`
+            const seasonPitchingAPI = `http://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27${rosterYear}%27&player_id=%27${playerID}%27`
             //Sample PlayerID --> Madison Bumgarner: 518516
             /*
                 
@@ -146,19 +146,19 @@ class App extends React.Component{
 
             
             //career hitting 'http://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%'+playerID+'%27'
-            const careerHittingAPI = `https://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%${playerID}%27`
+            const careerHittingAPI = `https://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%27${playerID}%27`
             
             //career pitching  http://lookup-service-prod.mlb.com/json/named.sport_career_pitching.bam?league_list_id='mlb'&game_type='R'&player_id='592789'
-            const careerPitchingAPI =`https://lookup-service-prod.mlb.com/json/named.sport_career_pitching.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%${playerID}%27`
+            const careerPitchingAPI =`https://lookup-service-prod.mlb.com/json/named.sport_career_pitching.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%27${playerID}%27`
             
             //projected hitting https://appac.github.io/mlb-data-api-docs/#stats-data-projected-hitting-stats-get
-            const projectedHittingAPI =`https://appac.github.io/mlb-data-api-docs/#stats-data-projected-hitting-stats-get`
+            const projectedHittingAPI =`http://lookup-service-prod.mlb.com/json/named.proj_pecota_batting.bam?season=%27${rosterYear}%27&player_id=%27${playerID}%27`
             
             //projected pitching https://appac.github.io/mlb-data-api-docs/#stats-data-projected-pitching-stats-get
-            const projectedPitchingAPI =`https://lookup-service-prod.mlb.com/json/named.proj_pecota_pitching.bam?season=%27${rosterYear}%27&player_id=%27'${playerID}%27`
+            const projectedPitchingAPI = `https://lookup-service-prod.mlb.com/json/named.proj_pecota_pitching.bam?season=%27${rosterYear}%27&player_id=%27${playerID}%27`
             
 
-            
+            /* This works
             fetch(playerInfoAPI)
                 .then(response => response.json())
                 .then(data => {
@@ -167,16 +167,54 @@ class App extends React.Component{
                             data: data.player_info.queryResults.row
                         })
                 })
-                .then(         fetch(seasonPitchingAPI)
-                .then(response=> response.json())
-                .then(data => {
-                    this.setState({
-                        seasonPitchingData: data.sport_pitching_tm.queryResults.row
-                    })
-                }))                
-                .catch(err=> console.log(err));
-               
+            */
+/*******************************************************************************************/
+            let urls = [
+                playerInfoAPI,
+                seasonHittingAPI,
+                seasonPitchingAPI,
+                careerHittingAPI,
+                careerPitchingAPI,
+                projectedHittingAPI,
+                projectedPitchingAPI
+            ]
 
+            let requests = urls.map(url => fetch(url));
+
+            //trying promises.all
+            Promise.all(requests)
+                .then(responses => {
+                    responses.forEach(response=>{
+                        process(response.json());
+                    })
+                    //responses[0].json()
+                    //responses[1].json()
+                })
+                .catch()
+
+            let process = (promise)=>{
+                promise.then(data=>{
+                    this.setState({
+                        drillDown: 'playerStats',
+                        //data: data.player_info.queryResults.row
+                        
+                    })
+                    console.log(data)
+                })
+            }
+                
+/*******************************************************************************************/
+
+
+  //              .then(         fetch(seasonPitchingAPI)
+  //              .then(response=> response.json())
+  //              .then(data => {
+  //                  this.setState({
+  //                      seasonPitchingData: data.sport_pitching_tm.queryResults.row
+  //                  })
+  //              }))                
+  //              .catch(err=> console.log(err));
+               
     }
     
     render(){
@@ -274,13 +312,12 @@ class App extends React.Component{
                         in={inches}
                         weight={data['weight']}
                         jerseyNumber={data['jersey_number']}
-                       // games={seasonPitchingData['g']}
-                        gamesStarted={seasonPitchingData['gs']}
-                        qualityStarts={seasonPitchingData['qs']}
-                        blownQualityStarts={seasonPitchingData['bqs']}
-                        inningsPitched={seasonPitchingData['ip']}
-                
-                    
+  //                      games={seasonPitchingData['g']}
+  //                      gamesStarted={seasonPitchingData['gs']}
+  //                      qualityStarts={seasonPitchingData['qs']}
+  //                      blownQualityStarts={seasonPitchingData['bqs']}
+  //                      inningsPitched={seasonPitchingData['ip']}
+                                    
                     />
                         
                 break;
@@ -454,22 +491,22 @@ class PlayerStats extends React.Component{
                     </div>
                     <div className="row">
                         <div className="col-2">
-                            <p className="card-text text-body">Games</p>
+                            <p className="card-text text-body cust-card-text-small">Games</p>
                         </div>
                         <div className="col-2">
-                            <p className="card-text text-body">GamesStarted</p>
+                            <p className="card-text text-body cust-card-text-small">GamesStarted</p>
                         </div>
                         <div className="col-2">
-                            <p className="card-text text-body cust-card-text-right">QualityStarts"</p>
+                            <p className="card-text text-body cust-card-text-right cust-card-text-small">QualityStarts"</p>
                         </div>
                         <div className="col-2">
-                            <p className="card-text text-body cust-card-text-right">BlownQualityStarts</p>
+                            <p className="card-text text-body cust-card-text-right cust-card-text-small">BlownQualityStarts</p>
                         </div>
                         <div className="col-2">
-                            <p className="card-text text-body cust-card-text-right">InningsPitched</p>
+                            <p className="card-text text-body cust-card-text-right cust-card-text-small">InningsPitched</p>
                         </div>
                         <div className="col-2">
-                            <p className="card-text text-body cust-card-text-right">{}</p>
+                            <p className="card-text text-body cust-card-text-right cust-card-text-small">{}</p>
                         </div>
                     </div>
                     <div className="row">
