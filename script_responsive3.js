@@ -50,8 +50,13 @@ var App = function (_React$Component) {
 
         _this.state = {
             drillDown: 'searchYear',
-            data: [],
-            seasonPitcingData: []
+            data: [], //player data
+            seasonHittingData: [],
+            seasonPitchingData: [],
+            careerHittingData: [],
+            careerPitchingData: [],
+            projHittingData: [],
+            projPitchingData: []
         };
         _this.handleTeamClick = _this.handleTeamClick.bind(_this);
         _this.handlePlayerClick = _this.handlePlayerClick.bind(_this);
@@ -81,6 +86,9 @@ var App = function (_React$Component) {
             this.getTeams();
             event.preventDefault();
         }
+
+        //TODO change these urls to const variables for clearing code
+
     }, {
         key: 'getTeams',
         value: function getTeams() {
@@ -132,7 +140,7 @@ var App = function (_React$Component) {
                 name_nick
                 primary_stat_type
                 status
-              */
+            */
 
             //season hitting http://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27493316%27
             var seasonHittingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
@@ -203,18 +211,24 @@ var App = function (_React$Component) {
                 responses.forEach(function (response) {
                     process(response.json());
                 });
-                //responses[0].json()
-                //responses[1].json()
             }).catch();
-
+            var test = 0;
             var process = function process(promise) {
                 promise.then(function (data) {
                     _this4.setState({
-                        drillDown: 'playerStats'
-                        //data: data.player_info.queryResults.row
+                        drillDown: 'playerStats',
+                        data: data.player_info.queryResults.row
+                        //            seasonHittingData: 
+                        //            seasonPitchingData: [],
+                        //            careerHittingData: [],
+                        //            careerPitchingData: [],
+                        //            projHittingData: [],
+                        //            projPitchingData: []
 
                     });
-                    console.log(data);
+                    test = data;
+                    console.log(test);
+                    //console.log(test.player_info.queryResults.row)
                 });
             };
 

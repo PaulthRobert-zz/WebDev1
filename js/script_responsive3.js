@@ -37,8 +37,13 @@ class App extends React.Component{
         super(props);
         this.state ={
             drillDown: 'searchYear',
-            data: [],
-            seasonPitcingData: []
+            data: [], //player data
+            seasonHittingData: [],
+            seasonPitchingData: [],
+            careerHittingData: [],
+            careerPitchingData: [],
+            projHittingData: [],
+            projPitchingData: []
         }
         this.handleTeamClick = this.handleTeamClick.bind(this);
         this.handlePlayerClick = this.handlePlayerClick.bind(this);
@@ -64,6 +69,7 @@ class App extends React.Component{
         event.preventDefault();
     }
 
+    //TODO change these urls to const variables for clearing code
     getTeams(){
         let rosterYear = document.getElementById('RosterYear').value;                
         fetch(`https://lookup-service-prod.mlb.com/json/named.team_all_season.bam?sport_code=%27mlb%27&all_star_sw=%27N%27&sort_order=name_asc&season=%27${rosterYear}%27`)
@@ -103,7 +109,6 @@ class App extends React.Component{
                     name_nick
                     primary_stat_type
                     status
-
                 */
             
             //season hitting http://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27493316%27
@@ -187,19 +192,25 @@ class App extends React.Component{
                     responses.forEach(response=>{
                         process(response.json());
                     })
-                    //responses[0].json()
-                    //responses[1].json()
                 })
                 .catch()
-
+let test = 0
             let process = (promise)=>{
                 promise.then(data=>{
                     this.setState({
                         drillDown: 'playerStats',
-                        //data: data.player_info.queryResults.row
+                        data: data.player_info.queryResults.row
+            //            seasonHittingData: 
+            //            seasonPitchingData: [],
+            //            careerHittingData: [],
+            //            careerPitchingData: [],
+            //            projHittingData: [],
+            //            projPitchingData: []
                         
                     })
-                    console.log(data)
+                    test = data
+                    console.log(test)
+                    //console.log(test.player_info.queryResults.row)
                 })
             }
                 
