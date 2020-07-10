@@ -6,7 +6,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-// script file for responsive2.html
+// script file for responsive3.html
 // js.react
 // babel > jsx
 
@@ -196,50 +196,25 @@ var App = function (_React$Component) {
             });
 
             //use promises.all to wait for a response from all of the fetch promises
-            /*           Promise.all(requests)
-                           .then(responses => {
-                               responses.forEach(response=>{
-                                   process(response.json());
-                               })
-                           })
-                           .catch(error => console.log(`Error in executing ${error}`))
-            */
             Promise.all(requests).then(function (responses) {
                 return Promise.all(responses.map(function (response) {
                     return response.json();
                 }));
             }).then(function (data) {
                 console.log(data);
+                _this4.setState({
+                    drillDown: 'playerStats',
+                    data: data[0].player_info.queryResults.row,
+                    seasonHittingData: data[1].sport_hitting_tm.queryResults.row,
+                    seasonPitchingData: data[2].sport_pitching_tm.queryResults.row,
+                    careerHittingData: data[3].sport_career_hitting.queryResults.row,
+                    careerPitchingData: data[4].sport_career_pitching.queryResults.row,
+                    projHittingData: data[5].proj_pecota_batting.queryResults.row,
+                    projPitchingData: data[6].proj_pecota_pitching.queryResults.row
+                });
+            }).catch(function (error) {
+                return console.log('error: ' + error);
             });
-
-            var process = function process(promise) {
-                promise.then(function (data) {
-                    _this4.setState({
-                        drillDown: 'playerStats',
-                        data: data.player_info.queryResults.row
-                        //            seasonHittingData: data.sport_hitting_tm.queryResults.row
-                        //            seasonPitchingData: [],
-                        //            careerHittingData: [],
-                        //            careerPitchingData: [],
-                        //            projHittingData: [],
-                        //            projPitchingData: []
-
-                    });
-                    // console.log(data)
-                    //console.log(test.player_info.queryResults.row)
-                }).catch();
-            };
-
-            /*******************************************************************************************/
-
-            //              .then(         fetch(seasonPitchingAPI)
-            //              .then(response=> response.json())
-            //              .then(data => {
-            //                  this.setState({
-            //                      seasonPitchingData: data.sport_pitching_tm.queryResults.row
-            //                  })
-            //              }))                
-            //              .catch(err=> console.log(err));
         }
     }, {
         key: 'render',
@@ -616,7 +591,7 @@ var PlayerStats = function (_React$Component5) {
                     { className: 'card-body bg-light team-card' },
                     React.createElement(
                         'div',
-                        { className: 'row' },
+                        { className: 'row align-items-start' },
                         React.createElement(
                             'div',
                             { className: 'col-4' },
@@ -663,7 +638,7 @@ var PlayerStats = function (_React$Component5) {
                             { className: 'col-2' },
                             React.createElement(
                                 'p',
-                                { className: 'card-text text-body cust-card-text-right' },
+                                { className: 'card-text cust-card-text-right' },
                                 '#',
                                 this.props.jerseyNumber
                             )
@@ -671,10 +646,10 @@ var PlayerStats = function (_React$Component5) {
                     ),
                     React.createElement(
                         'div',
-                        { className: 'row' },
+                        { className: 'row align-items-start' },
                         React.createElement(
                             'div',
-                            { className: 'col-2' },
+                            { className: 'col-6' },
                             React.createElement(
                                 'p',
                                 { className: 'card-text text-body cust-card-text-small' },
@@ -683,44 +658,56 @@ var PlayerStats = function (_React$Component5) {
                         ),
                         React.createElement(
                             'div',
-                            { className: 'col-2' },
+                            { className: 'col-6' },
                             React.createElement(
                                 'p',
                                 { className: 'card-text text-body cust-card-text-small' },
                                 'GamesStarted'
                             )
-                        ),
+                        )
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'row align-items-start' },
                         React.createElement(
                             'div',
-                            { className: 'col-2' },
+                            { className: 'col-6' },
                             React.createElement(
                                 'p',
-                                { className: 'card-text text-body cust-card-text-right cust-card-text-small' },
-                                'QualityStarts"'
+                                { className: 'card-text text-body cust-card-text-small' },
+                                'QualityStarts'
                             )
                         ),
                         React.createElement(
                             'div',
-                            { className: 'col-2' },
+                            { className: 'col-6' },
                             React.createElement(
                                 'p',
-                                { className: 'card-text text-body cust-card-text-right cust-card-text-small' },
+                                { className: 'card-text text-body cust-card-text-small' },
                                 'BlownQualityStarts'
                             )
-                        ),
+                        )
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'row align-items-start' },
                         React.createElement(
                             'div',
-                            { className: 'col-2' },
+                            { className: 'col-6' },
                             React.createElement(
                                 'p',
-                                { className: 'card-text text-body cust-card-text-right cust-card-text-small' },
+                                { className: 'card-text text-body cust-card-text-small' },
                                 'InningsPitched'
                             )
                         ),
                         React.createElement(
                             'div',
-                            { className: 'col-2' },
-                            React.createElement('p', { className: 'card-text text-body cust-card-text-right cust-card-text-small' })
+                            { className: 'col-6' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body  cust-card-text-small' },
+                                'Something Here'
+                            )
                         )
                     ),
                     React.createElement(

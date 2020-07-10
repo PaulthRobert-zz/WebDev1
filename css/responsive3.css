@@ -6,10 +6,11 @@
 
 .cust-card-text-right{
     text-align: right;
+    padding-right: 10%;
 }
 
 .cust-card-text-small{
-    font-size: x-small;
+    font-size: small;
 }
 
 .row > *{

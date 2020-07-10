@@ -1,4 +1,4 @@
-// script file for responsive2.html
+// script file for responsive3.html
 // js.react
 // babel > jsx
 
@@ -174,56 +174,26 @@ class App extends React.Component{
             let requests = urls.map(url => fetch(url));
 
             //use promises.all to wait for a response from all of the fetch promises
- /*           Promise.all(requests)
-                .then(responses => {
-                    responses.forEach(response=>{
-                        process(response.json());
-                    })
-                })
-                .catch(error => console.log(`Error in executing ${error}`))
-*/
-            Promise.all(requests)
+           Promise.all(requests)
             .then(function (responses) {
                 return Promise.all(responses.map(function (response) {
                     return response.json()
                 }))
             })
-            .then(function(data) {
-                console.log(data)
-            })
-
-
-            let process = (promise)=>{
-                promise.then(data=>{
-                    this.setState({
-                        drillDown: 'playerStats',
-                        data: data.player_info.queryResults.row
-            //            seasonHittingData: data.sport_hitting_tm.queryResults.row
-            //            seasonPitchingData: [],
-            //            careerHittingData: [],
-            //            careerPitchingData: [],
-            //            projHittingData: [],
-            //            projPitchingData: []
-                        
-                    })
-                   // console.log(data)
-                    //console.log(test.player_info.queryResults.row)
+            .then(data => {
+               console.log(data)
+                this.setState({
+                    drillDown: 'playerStats',
+                    data:               data[0].player_info.queryResults.row,
+                    seasonHittingData:  data[1].sport_hitting_tm.queryResults.row,
+                    seasonPitchingData: data[2].sport_pitching_tm.queryResults.row,
+                    careerHittingData:  data[3].sport_career_hitting.queryResults.row,
+                    careerPitchingData: data[4].sport_career_pitching.queryResults.row,
+                    projHittingData:    data[5].proj_pecota_batting.queryResults.row,
+                    projPitchingData:   data[6].proj_pecota_pitching.queryResults.row
                 })
-                .catch()    
-            }
-                
-/*******************************************************************************************/
-
-
-  //              .then(         fetch(seasonPitchingAPI)
-  //              .then(response=> response.json())
-  //              .then(data => {
-  //                  this.setState({
-  //                      seasonPitchingData: data.sport_pitching_tm.queryResults.row
-  //                  })
-  //              }))                
-  //              .catch(err=> console.log(err));
-               
+            })
+            .catch(error => console.log(`error: ${error}`))        
     }
     
     render(){
@@ -481,7 +451,7 @@ class PlayerStats extends React.Component{
         return(
             <div className="card bg-dark" onClick={this.props.onClick}>    
                 <div className="card-body bg-light team-card">    
-                    <div className="row">
+                    <div className="row align-items-start">
                         <div className="col-4">
                             <p className="card-text text-body">{this.props.name}</p>
                         </div>
@@ -495,29 +465,34 @@ class PlayerStats extends React.Component{
                             <p className="card-text text-body cust-card-text-right">{this.props.weight} lbs</p>
                         </div>
                         <div className="col-2">
-                            <p className="card-text text-body cust-card-text-right">#{this.props.jerseyNumber}</p>
+                            <p className="card-text cust-card-text-right">#{this.props.jerseyNumber}</p>
                         </div>
                     </div>
-                    <div className="row">
-                        <div className="col-2">
+                    <div className="row align-items-start">
+                        <div className="col-6">
                             <p className="card-text text-body cust-card-text-small">Games</p>
                         </div>
-                        <div className="col-2">
+                        <div className="col-6">
                             <p className="card-text text-body cust-card-text-small">GamesStarted</p>
                         </div>
-                        <div className="col-2">
-                            <p className="card-text text-body cust-card-text-right cust-card-text-small">QualityStarts"</p>
+                    </div>
+                    <div className="row align-items-start">
+                        <div className="col-6">
+                            <p className="card-text text-body cust-card-text-small">QualityStarts</p>
                         </div>
-                        <div className="col-2">
-                            <p className="card-text text-body cust-card-text-right cust-card-text-small">BlownQualityStarts</p>
-                        </div>
-                        <div className="col-2">
-                            <p className="card-text text-body cust-card-text-right cust-card-text-small">InningsPitched</p>
-                        </div>
-                        <div className="col-2">
-                            <p className="card-text text-body cust-card-text-right cust-card-text-small">{}</p>
+                        <div className="col-6">
+                            <p className="card-text text-body cust-card-text-small">BlownQualityStarts</p>
                         </div>
                     </div>
+                    <div className="row align-items-start">
+                        <div className="col-6">
+                            <p className="card-text text-body cust-card-text-small">InningsPitched</p>
+                        </div>
+                        <div className="col-6">
+                            <p className="card-text text-body  cust-card-text-small">Something Here</p>
+                        </div>
+                    </div>
+
                     <div className="row">
                         <div className="col-2">
                             <p className="card-text text-body">{this.props.games}</p>
