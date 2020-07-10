@@ -112,10 +112,10 @@ class App extends React.Component{
                 */
             
             //season hitting http://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27493316%27
-            const seasonHittingAPI = `http://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27${rosterYear}%27&player_id=%27${playerID}%27`
+            const seasonHittingAPI = `https://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27${rosterYear}%27&player_id=%27${playerID}%27`
             
             //season pitching 
-            const seasonPitchingAPI = `http://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27${rosterYear}%27&player_id=%27${playerID}%27`
+            const seasonPitchingAPI = `https://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27${rosterYear}%27&player_id=%27${playerID}%27`
             //Sample PlayerID --> Madison Bumgarner: 518516
             /*
                 
@@ -149,7 +149,6 @@ class App extends React.Component{
                 hr9 - HR/9
             */
 
-            
             //career hitting 'http://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%'+playerID+'%27'
             const careerHittingAPI = `https://lookup-service-prod.mlb.com/json/named.sport_career_hitting.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%27${playerID}%27`
             
@@ -157,7 +156,7 @@ class App extends React.Component{
             const careerPitchingAPI =`https://lookup-service-prod.mlb.com/json/named.sport_career_pitching.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%27${playerID}%27`
             
             //projected hitting https://appac.github.io/mlb-data-api-docs/#stats-data-projected-hitting-stats-get
-            const projectedHittingAPI =`http://lookup-service-prod.mlb.com/json/named.proj_pecota_batting.bam?season=%27${rosterYear}%27&player_id=%27${playerID}%27`
+            const projectedHittingAPI =`https://lookup-service-prod.mlb.com/json/named.proj_pecota_batting.bam?season=%27${rosterYear}%27&player_id=%27${playerID}%27`
             
             //projected pitching https://appac.github.io/mlb-data-api-docs/#stats-data-projected-pitching-stats-get
             const projectedPitchingAPI = `https://lookup-service-prod.mlb.com/json/named.proj_pecota_pitching.bam?season=%27${rosterYear}%27&player_id=%27${playerID}%27`

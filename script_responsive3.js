@@ -143,10 +143,10 @@ var App = function (_React$Component) {
             */
 
             //season hitting http://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%272017%27&player_id=%27493316%27
-            var seasonHittingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
+            var seasonHittingAPI = 'https://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
 
             //season pitching 
-            var seasonPitchingAPI = 'http://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
+            var seasonPitchingAPI = 'https://lookup-service-prod.mlb.com/json/named.sport_pitching_tm.bam?league_list_id=%27mlb%27&game_type=%27R%27&season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
             //Sample PlayerID --> Madison Bumgarner: 518516
             /*
                 
@@ -184,7 +184,7 @@ var App = function (_React$Component) {
             var careerPitchingAPI = 'https://lookup-service-prod.mlb.com/json/named.sport_career_pitching.bam?league_list_id=%27mlb%27&game_type=%27R%27&player_id=%27' + playerID + '%27';
 
             //projected hitting https://appac.github.io/mlb-data-api-docs/#stats-data-projected-hitting-stats-get
-            var projectedHittingAPI = 'http://lookup-service-prod.mlb.com/json/named.proj_pecota_batting.bam?season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
+            var projectedHittingAPI = 'https://lookup-service-prod.mlb.com/json/named.proj_pecota_batting.bam?season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
 
             //projected pitching https://appac.github.io/mlb-data-api-docs/#stats-data-projected-pitching-stats-get
             var projectedPitchingAPI = 'https://lookup-service-prod.mlb.com/json/named.proj_pecota_pitching.bam?season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
