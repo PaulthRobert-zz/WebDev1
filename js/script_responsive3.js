@@ -98,11 +98,9 @@ class App extends React.Component{
 
     getPlayer(playerID){
         let rosterYear = document.getElementById('RosterYear').value;
-
         //Sample PlayerID --> Madison Bumgarner: 518516
 
-        //TODO - rewrite these as `https://${variable}`
-        //fetches
+        //Define all of the URLS
             //player info          http://lookup-service-prod.mlb.com/json/named.player_info.bam?sport_code=%27mlb%27&player_id=%27493316%27
             const playerInfoAPI = `https://lookup-service-prod.mlb.com/json/named.player_info.bam?sport_code=%27mlb%27&player_id=%27${playerID}%27`
                 /*
@@ -159,20 +157,9 @@ class App extends React.Component{
             const projectedHittingAPI =`https://lookup-service-prod.mlb.com/json/named.proj_pecota_batting.bam?season=%27${rosterYear}%27&player_id=%27${playerID}%27`
             
             //projected pitching https://appac.github.io/mlb-data-api-docs/#stats-data-projected-pitching-stats-get
-            const projectedPitchingAPI = `https://lookup-service-prod.mlb.com/json/named.proj_pecota_pitching.bam?season=%27${rosterYear}%27&player_id=%27${playerID}%27`
-            
+            const projectedPitchingAPI = `https://lookup-service-prod.mlb.com/json/named.proj_pecota_pitching.bam?season=%27${rosterYear}%27&player_id=%27${playerID}%27`      
 
-            /* This works
-            fetch(playerInfoAPI)
-                .then(response => response.json())
-                .then(data => {
-                        this.setState({
-                            drillDown: 'playerStats',
-                            data: data.player_info.queryResults.row
-                        })
-                })
-            */
-/*******************************************************************************************/
+            //initialize and array as a collection of all of the urls
             let urls = [
                 playerInfoAPI,
                 seasonHittingAPI,
@@ -183,23 +170,35 @@ class App extends React.Component{
                 projectedPitchingAPI
             ]
 
+            //iterate over the array to fetch all of the URLs
             let requests = urls.map(url => fetch(url));
 
-            //trying promises.all
-            Promise.all(requests)
+            //use promises.all to wait for a response from all of the fetch promises
+ /*           Promise.all(requests)
                 .then(responses => {
                     responses.forEach(response=>{
                         process(response.json());
                     })
                 })
-                .catch()
-let test = 0
+                .catch(error => console.log(`Error in executing ${error}`))
+*/
+            Promise.all(requests)
+            .then(function (responses) {
+                return Promise.all(responses.map(function (response) {
+                    return response.json()
+                }))
+            })
+            .then(function(data) {
+                console.log(data)
+            })
+
+
             let process = (promise)=>{
                 promise.then(data=>{
                     this.setState({
                         drillDown: 'playerStats',
                         data: data.player_info.queryResults.row
-            //            seasonHittingData: 
+            //            seasonHittingData: data.sport_hitting_tm.queryResults.row
             //            seasonPitchingData: [],
             //            careerHittingData: [],
             //            careerPitchingData: [],
@@ -207,10 +206,10 @@ let test = 0
             //            projPitchingData: []
                         
                     })
-                    test = data
-                    console.log(test)
+                   // console.log(data)
                     //console.log(test.player_info.queryResults.row)
                 })
+                .catch()    
             }
                 
 /*******************************************************************************************/

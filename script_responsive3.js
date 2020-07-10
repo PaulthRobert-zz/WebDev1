@@ -129,11 +129,9 @@ var App = function (_React$Component) {
             var _this4 = this;
 
             var rosterYear = document.getElementById('RosterYear').value;
-
             //Sample PlayerID --> Madison Bumgarner: 518516
 
-            //TODO - rewrite these as `https://${variable}`
-            //fetches
+            //Define all of the URLS
             //player info          http://lookup-service-prod.mlb.com/json/named.player_info.bam?sport_code=%27mlb%27&player_id=%27493316%27
             var playerInfoAPI = 'https://lookup-service-prod.mlb.com/json/named.player_info.bam?sport_code=%27mlb%27&player_id=%27' + playerID + '%27';
             /*
@@ -189,36 +187,37 @@ var App = function (_React$Component) {
             //projected pitching https://appac.github.io/mlb-data-api-docs/#stats-data-projected-pitching-stats-get
             var projectedPitchingAPI = 'https://lookup-service-prod.mlb.com/json/named.proj_pecota_pitching.bam?season=%27' + rosterYear + '%27&player_id=%27' + playerID + '%27';
 
-            /* This works
-            fetch(playerInfoAPI)
-                .then(response => response.json())
-                .then(data => {
-                        this.setState({
-                            drillDown: 'playerStats',
-                            data: data.player_info.queryResults.row
-                        })
-                })
-            */
-            /*******************************************************************************************/
+            //initialize and array as a collection of all of the urls
             var urls = [playerInfoAPI, seasonHittingAPI, seasonPitchingAPI, careerHittingAPI, careerPitchingAPI, projectedHittingAPI, projectedPitchingAPI];
 
+            //iterate over the array to fetch all of the URLs
             var requests = urls.map(function (url) {
                 return fetch(url);
             });
 
-            //trying promises.all
+            //use promises.all to wait for a response from all of the fetch promises
+            /*           Promise.all(requests)
+                           .then(responses => {
+                               responses.forEach(response=>{
+                                   process(response.json());
+                               })
+                           })
+                           .catch(error => console.log(`Error in executing ${error}`))
+            */
             Promise.all(requests).then(function (responses) {
-                responses.forEach(function (response) {
-                    process(response.json());
-                });
-            }).catch();
-            var test = 0;
+                return Promise.all(responses.map(function (response) {
+                    return response.json();
+                }));
+            }).then(function (data) {
+                console.log(data);
+            });
+
             var process = function process(promise) {
                 promise.then(function (data) {
                     _this4.setState({
                         drillDown: 'playerStats',
                         data: data.player_info.queryResults.row
-                        //            seasonHittingData: 
+                        //            seasonHittingData: data.sport_hitting_tm.queryResults.row
                         //            seasonPitchingData: [],
                         //            careerHittingData: [],
                         //            careerPitchingData: [],
@@ -226,10 +225,9 @@ var App = function (_React$Component) {
                         //            projPitchingData: []
 
                     });
-                    test = data;
-                    console.log(test);
+                    // console.log(data)
                     //console.log(test.player_info.queryResults.row)
-                });
+                }).catch();
             };
 
             /*******************************************************************************************/
