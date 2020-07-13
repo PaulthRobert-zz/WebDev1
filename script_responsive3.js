@@ -591,54 +591,97 @@ var PlayerStats = function (_React$Component5) {
                     { className: 'card-body bg-light team-card' },
                     React.createElement(
                         'div',
-                        { className: 'row align-items-start' },
+                        { className: 'row' },
                         React.createElement(
                             'div',
-                            { className: 'col-4' },
+                            { className: 'col' },
                             React.createElement(
                                 'p',
                                 { className: 'card-text text-body' },
                                 this.props.name
                             )
-                        ),
+                        )
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'row cust-card-text-small' },
                         React.createElement(
                             'div',
-                            { className: 'col-2' },
+                            { className: 'col-3' },
                             React.createElement(
                                 'p',
                                 { className: 'card-text text-body cust-card-text-right' },
-                                this.props.age,
-                                '"'
+                                'age:'
                             )
                         ),
                         React.createElement(
                             'div',
-                            { className: 'col-2' },
+                            { className: 'col-3' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body' },
+                                this.props.age
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-3' },
                             React.createElement(
                                 'p',
                                 { className: 'card-text text-body cust-card-text-right' },
+                                'height:'
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-3' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body' },
                                 this.props.ft,
                                 '\' ',
                                 this.props.in,
                                 '"'
                             )
-                        ),
+                        )
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'row cust-card-text-small' },
                         React.createElement(
                             'div',
-                            { className: 'col-2' },
+                            { className: 'col-3' },
                             React.createElement(
                                 'p',
                                 { className: 'card-text text-body cust-card-text-right' },
+                                'weight:'
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-3' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body' },
                                 this.props.weight,
                                 ' lbs'
                             )
                         ),
                         React.createElement(
                             'div',
-                            { className: 'col-2' },
+                            { className: 'col-3' },
                             React.createElement(
                                 'p',
-                                { className: 'card-text cust-card-text-right' },
+                                { className: 'card-text text-body cust-card-text-right' },
+                                'jersey:'
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-3' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text' },
                                 '#',
                                 this.props.jerseyNumber
                             )
@@ -649,7 +692,7 @@ var PlayerStats = function (_React$Component5) {
                         { className: 'row align-items-start' },
                         React.createElement(
                             'div',
-                            { className: 'col-6' },
+                            { className: 'col-3' },
                             React.createElement(
                                 'p',
                                 { className: 'card-text text-body cust-card-text-small' },
@@ -658,11 +701,29 @@ var PlayerStats = function (_React$Component5) {
                         ),
                         React.createElement(
                             'div',
-                            { className: 'col-6' },
+                            { className: 'col-3' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body cust-card-text-small' },
+                                this.props.games
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-3' },
                             React.createElement(
                                 'p',
                                 { className: 'card-text text-body cust-card-text-small' },
                                 'GamesStarted'
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-3' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body cust-card-text-small' },
+                                this.props.gamesStarted
                             )
                         )
                     ),
@@ -671,7 +732,7 @@ var PlayerStats = function (_React$Component5) {
                         { className: 'row align-items-start' },
                         React.createElement(
                             'div',
-                            { className: 'col-6' },
+                            { className: 'col-3' },
                             React.createElement(
                                 'p',
                                 { className: 'card-text text-body cust-card-text-small' },
@@ -680,11 +741,30 @@ var PlayerStats = function (_React$Component5) {
                         ),
                         React.createElement(
                             'div',
-                            { className: 'col-6' },
+                            { className: 'col-3' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body cust-card-text-small' },
+                                this.props.qualityStarts
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-3' },
                             React.createElement(
                                 'p',
                                 { className: 'card-text text-body cust-card-text-small' },
                                 'BlownQualityStarts'
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-3' },
+                            React.createElement(
+                                'p',
+                                { className: 'card-text text-body cust-card-text-small' },
+                                this.props.blownQualityStarts,
+                                '         '
                             )
                         )
                     ),
@@ -694,20 +774,94 @@ var PlayerStats = function (_React$Component5) {
                         React.createElement(
                             'div',
                             { className: 'col-6' },
-                            React.createElement(
-                                'p',
-                                { className: 'card-text text-body cust-card-text-small' },
-                                'InningsPitched'
-                            )
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-small' })
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-3' },
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-small' })
                         ),
                         React.createElement(
                             'div',
                             { className: 'col-6' },
-                            React.createElement(
-                                'p',
-                                { className: 'card-text text-body  cust-card-text-small' },
-                                'Something Here'
-                            )
+                            React.createElement('p', { className: 'card-text text-body  cust-card-text-small' })
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-3' },
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-small' })
+                        )
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'row align-items-start' },
+                        React.createElement(
+                            'div',
+                            { className: 'col-6' },
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-small' })
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-3' },
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-small' })
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-6' },
+                            React.createElement('p', { className: 'card-text text-body  cust-card-text-small' })
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-3' },
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-small' })
+                        )
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'row align-items-start' },
+                        React.createElement(
+                            'div',
+                            { className: 'col-6' },
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-small' })
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-3' },
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-small' })
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-6' },
+                            React.createElement('p', { className: 'card-text text-body  cust-card-text-small' })
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-3' },
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-small' })
+                        )
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'row align-items-start' },
+                        React.createElement(
+                            'div',
+                            { className: 'col-6' },
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-small' })
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-3' },
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-small' })
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-6' },
+                            React.createElement('p', { className: 'card-text text-body  cust-card-text-small' })
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'col-3' },
+                            React.createElement('p', { className: 'card-text text-body cust-card-text-small' })
                         )
                     ),
                     React.createElement(

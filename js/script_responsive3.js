@@ -291,6 +291,7 @@ class App extends React.Component{
                         in={inches}
                         weight={data['weight']}
                         jerseyNumber={data['jersey_number']}
+  /* 7/13/20 ready to add the props in to display the data, just look it over to get the syntax right for eeach datapoint.                        
   //                      games={seasonPitchingData['g']}
   //                      gamesStarted={seasonPitchingData['gs']}
   //                      qualityStarts={seasonPitchingData['qs']}
@@ -451,47 +452,123 @@ class PlayerStats extends React.Component{
         return(
             <div className="card bg-dark" onClick={this.props.onClick}>    
                 <div className="card-body bg-light team-card">    
-                    <div className="row align-items-start">
-                        <div className="col-4">
+                    <div className="row">
+                        <div className="col">
                             <p className="card-text text-body">{this.props.name}</p>
                         </div>
-                        <div className="col-2">
-                            <p className="card-text text-body cust-card-text-right">{this.props.age}"</p>
+                    </div>
+                    <div className="row cust-card-text-small">
+                        <div className="col-3">
+                            <p className="card-text text-body cust-card-text-right">age:</p>
+                        </div>                        
+                        <div className="col-3">
+                            <p className="card-text text-body">{this.props.age}</p>
                         </div>
-                        <div className="col-2">
-                            <p className="card-text text-body cust-card-text-right">{this.props.ft}' {this.props.in}"</p>
+                        <div className="col-3">
+                            <p className="card-text text-body cust-card-text-right">height:</p>
+                        </div>                         
+                        <div className="col-3">
+                            <p className="card-text text-body">{this.props.ft}' {this.props.in}"</p>
                         </div>
-                        <div className="col-2">
-                            <p className="card-text text-body cust-card-text-right">{this.props.weight} lbs</p>
+                    </div>
+                    <div className="row cust-card-text-small">
+                    <div className="col-3">
+                            <p className="card-text text-body cust-card-text-right">weight:</p>
+                        </div>                     
+                        <div className="col-3">
+                            <p className="card-text text-body">{this.props.weight} lbs</p>
                         </div>
-                        <div className="col-2">
-                            <p className="card-text cust-card-text-right">#{this.props.jerseyNumber}</p>
+                        <div className="col-3">
+                            <p className="card-text text-body cust-card-text-right">jersey:</p>
+                        </div>                         
+                        <div className="col-3">
+                            <p className="card-text">#{this.props.jerseyNumber}</p>
                         </div>
                     </div>
                     <div className="row align-items-start">
-                        <div className="col-6">
+                        <div className="col-3">
                             <p className="card-text text-body cust-card-text-small">Games</p>
                         </div>
-                        <div className="col-6">
+                        <div className="col-3">
+                            <p className="card-text text-body cust-card-text-small">{this.props.games}</p>
+                        </div>                        
+                        <div className="col-3">
                             <p className="card-text text-body cust-card-text-small">GamesStarted</p>
                         </div>
+                        <div className="col-3">
+                            <p className="card-text text-body cust-card-text-small">{this.props.gamesStarted}</p>
+                        </div>                           
                     </div>
                     <div className="row align-items-start">
-                        <div className="col-6">
+                        <div className="col-3">
                             <p className="card-text text-body cust-card-text-small">QualityStarts</p>
                         </div>
-                        <div className="col-6">
+                        <div className="col-3">
+                            <p className="card-text text-body cust-card-text-small">{this.props.qualityStarts}</p>
+                        </div>                           
+                        <div className="col-3">
                             <p className="card-text text-body cust-card-text-small">BlownQualityStarts</p>
                         </div>
+                        <div className="col-3">
+                            <p className="card-text text-body cust-card-text-small">{this.props.blownQualityStarts}         </p>
+                        </div>                           
                     </div>
                     <div className="row align-items-start">
                         <div className="col-6">
-                            <p className="card-text text-body cust-card-text-small">InningsPitched</p>
+                            <p className="card-text text-body cust-card-text-small"></p>
                         </div>
+                        <div className="col-3">
+                            <p className="card-text text-body cust-card-text-small"></p>
+                        </div>                           
                         <div className="col-6">
-                            <p className="card-text text-body  cust-card-text-small">Something Here</p>
+                            <p className="card-text text-body  cust-card-text-small"></p>
                         </div>
+                        <div className="col-3">
+                            <p className="card-text text-body cust-card-text-small"></p>
+                        </div>                           
                     </div>
+                    <div className="row align-items-start">
+                        <div className="col-6">
+                            <p className="card-text text-body cust-card-text-small"></p>
+                        </div>
+                        <div className="col-3">
+                            <p className="card-text text-body cust-card-text-small"></p>
+                        </div>                           
+                        <div className="col-6">
+                            <p className="card-text text-body  cust-card-text-small"></p>
+                        </div>
+                        <div className="col-3">
+                            <p className="card-text text-body cust-card-text-small"></p>
+                        </div>                           
+                    </div>
+                    <div className="row align-items-start">
+                        <div className="col-6">
+                            <p className="card-text text-body cust-card-text-small"></p>
+                        </div>
+                        <div className="col-3">
+                            <p className="card-text text-body cust-card-text-small"></p>
+                        </div>                           
+                        <div className="col-6">
+                            <p className="card-text text-body  cust-card-text-small"></p>
+                        </div>
+                        <div className="col-3">
+                            <p className="card-text text-body cust-card-text-small"></p>
+                        </div>                           
+                    </div>
+                    <div className="row align-items-start">
+                        <div className="col-6">
+                            <p className="card-text text-body cust-card-text-small"></p>
+                        </div>
+                        <div className="col-3">
+                            <p className="card-text text-body cust-card-text-small"></p>
+                        </div>                           
+                        <div className="col-6">
+                            <p className="card-text text-body  cust-card-text-small"></p>
+                        </div>
+                        <div className="col-3">
+                            <p className="card-text text-body cust-card-text-small"></p>
+                        </div>                           
+                    </div>                                                            
 
                     <div className="row">
                         <div className="col-2">
